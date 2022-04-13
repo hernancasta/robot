@@ -1,0 +1,230 @@
+﻿@page "/"
+@inject RobotHMI.Data.RobotClientService RobotCLI
+
+<div class="container-fullwidth ">
+    <div class="card ">
+        <span class="corner-border-top"></span>
+        <div class="card-body container-fluid nopadding">
+            <div class="row">
+                <div class="col">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col nopadding">
+                                <!-- drives -->
+                                <div class="card compact">
+                                    <span class="corner-border-top">
+                                    </span>
+                                    <div class="card-header">
+                                        <h5 class="nomargin-bottom">
+                                            <i class="fa fa-cog"></i>&nbsp;Drive
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm table-dark">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+
+                                                    </th>
+                                                    <th>
+                                                        Motor 1
+                                                    </th>
+                                                    <th>
+                                                        Motor 2
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Encoder</th>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Encoder1"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Encoder1"))</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Encoder2"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Encoder2"))</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Speed</th>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Speed1"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Speed1"))</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Speed2"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Speed2"))</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Current</th>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Current1"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Current1").ToString("0.0"))A</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Current2"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Current2").ToString("0.0"))A</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Temp</th>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Temperature1"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Temperature1"))°C</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!RobotCLI.HasTag("Temperature2"))
+                                                        {
+                                                            <span>N/A</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@(RobotCLI.GetTag("Temperature2"))°C</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                    <span class="corner-border-bottom">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col nopadding">
+                                <!-- running tasks-->
+                                <div class="card compact">
+                                    <span class="corner-border-top">
+                                    </span>
+                                    <div class="card-header">
+                                        <h5 class="nomargin-bottom">
+                                            <i class="fa fa-tasks"></i>&nbsp;Running Tasks
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm table-dark" >
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Status</th>
+                                                    <th>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+@*                                                @if (LogicAPI.RunningTasks != null) {
+                                                    foreach (var t in LogicAPI.RunningTasks.Where(x => x.Status == Data.TaskStatus.Running))
+                                                    {
+                                                <tr>
+                                                    <th scope="row">@t.TaskName</th>
+                                                    <td colspan="2">@t.Status</td>
+                                                </tr>
+                                                    }
+                                                }
+*@                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span class="corner-border-bottom">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col nopadding">
+                    <!-- general -->
+                    <div class="card compact">
+                        <span class="corner-border-top">
+                        </span>
+                        <div class="card-header">
+                            <h5 class="nomargin-bottom">
+                                <i class="fa fa-camera"></i>&nbsp;Camera
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="container nopadding nomargin" >
+                                <img src="http://10.0.1.10:8080/cam.mjpg" width="640" height="400" />
+                            </div>
+                        </div>
+                        <span class="corner-border-bottom">
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span class="corner-border-bottom"></span>
+    </div>
+</div>
+
+<button id="back-to-top" class="btn btn-highlight" role="button">
+    <span class="fa fa-chevron-up"></span>
+</button>
+
+
+@code{
+
+    protected override void OnInitialized()
+    {
+        RobotCLI.OnChange += ApplyChanges;
+        base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+        RobotCLI.OnChange -= ApplyChanges;
+    }
+
+    private void ApplyChanges()
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+
+}

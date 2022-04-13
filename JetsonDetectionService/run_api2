@@ -1,0 +1,3 @@
+v4l2-ctl -c focus_auto=0
+cd /home/jetson/JetsonDetectionService
+python3 streamserver.py | dotnet JetsonDetectionService.dll &

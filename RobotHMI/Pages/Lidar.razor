@@ -1,0 +1,171 @@
+﻿@page "/Lidar"
+@using RobotHMI.Data
+@using static global::Shared.Data.LidarMessage
+@inject RobotClientService RobotCLI
+
+<div class="container-fullwidth">
+    <div class="card">
+        <span class="corner-border-top"></span>
+        <div class="card-body container-fluid nopadding">
+            <div class="row">
+                <div class="col-6 col-md-6">
+                    <div class="container-fluid justify-content-center">
+                        <div class="row">
+                            <div class="col justify-content-center">
+                                <svg height="@Size" width="@Size" viewBox="0 0 @Size @Size" preserveAspectRatio="xMidYMid">
+                                    <circle cx="@(Size/2)" cy="@(Size/2)" r="@(disttomap(8))" stroke="rgba(43,237,230,0.35)" stroke-width="1" fill="rgba(0,0,0,0.7)" />
+                                    <circle cx="@(Size/2)" cy="@(Size/2)" r="@(disttomap(4))" stroke="rgba(43,237,230,0.35)" stroke-width="1" fill-opacity="0%" />
+                                    <circle cx="@(Size/2)" cy="@(Size/2)" r="@(disttomap(2))" stroke="rgba(43,237,230,0.35)" stroke-width="1" fill-opacity="0%" />
+                                    <circle cx="@(Size/2)" cy="@(Size/2)" r="@(disttomap(1))" stroke="rgba(43,237,230,0.35)" stroke-width="1" fill-opacity="0%" />
+                                    @if (RobotCLI.LidarScan != null)
+                                    {
+                                        foreach (var m in RobotCLI.LidarScan.Measurements)
+                                        {
+                                            if (m.Distance > 0)
+                                            {
+                                                <rect x="@((Size / 2) + (Size / 2) * Math.Sin(m.Angle * Math.PI / 180.0) * (m.Distance / MaxDisplayDistance)-1)"
+                                                      y="@((Size / 2) - (Size / 2) * Math.Cos(m.Angle * Math.PI / 180.0) * (m.Distance / MaxDisplayDistance)-1)"
+                                                      width="3" height="3" stroke="@(pointcolor(m.Distance))" fill="@(pointcolor(m.Distance))"></rect>
+                                            }
+                                        }
+                                    }
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card compact">
+                                    <span class="corner-border-top">
+                                    </span>
+                                    <div class="card-header">
+                                        <h5 class="nomargin-bottom">Range @MaxDisplayDistance meters</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <input type="range" min="1" max="8" @onchange="zoomchanged" class="form-control-range" id="formControlRange" data-slider-orientation="vertical">
+                                        </div>
+                                    </div>
+                                    <span class="corner-border-bottom">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+
+                                <div class="card compact">
+                                    <span class="corner-border-top">
+                                    </span>
+                                    <div class="card-header">
+                                        <h5 class="nomargin-bottom">Closest measure</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-6 col-md-6 no-break"><h4>Distance</h4></div>
+                                                <div class="col-6 col-md-6 no-break"><h4>@(Closest.Distance.ToString("0.00"))mt</h4></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 col-md-6 no-break"><h4>Direction</h4></div>
+                                                <div class="col-6 col-md-6 no-break"><h4>@(Closest.Angle.ToString("0.00"))°</h4></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="corner-border-bottom">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="card compact">
+                                    <span class="corner-border-top">
+                                    </span>
+                                    <div class="card-header">
+                                        <h5 class="nomargin-bottom">Safety Zones</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-6 col-md-6 no-break"><h4>Exclusion</h4></div>
+                                                <div class="col-6 col-md-6 no-break"><h4>@(MinDistance.ToString("0.00"))mt</h4></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 col-md-6 no-break"><h4>Warning</h4></div>
+                                                <div class="col-6 col-md-6 no-break"><h4>@(WarnDistance.ToString("0.00"))mt</h4></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="corner-border-bottom">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span class="corner-border-bottom"></span>
+    </div>
+</div>
+
+
+@code {
+
+    public float Size = 440;
+    public int Percent { get; set; } = 50;
+
+    public double MinDistance { get; protected set; }
+    public double WarnDistance { get; protected set; }
+
+    public double MaxDisplayDistance { get; set; } = 8;
+
+    public LidarMeasurement Closest { get {
+            if (RobotCLI.LidarScan!=null)
+                return RobotCLI.LidarScan.Measurements.Where(x => x.Distance > 0).OrderBy(x => x.Distance).FirstOrDefault();
+            return new LidarMeasurement(true,0,0,0);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        RobotCLI.OnChange += ApplyChanges;
+      //  MinDistance = (double)RobotCLI.Presets.Where(x => x.Name == "LidarRadiusMin").Single().ValueObject;
+      //  WarnDistance = (double)RobotCLI.Presets.Where(x => x.Name == "LidarRadiusWarning").Single().ValueObject;
+        base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+        RobotCLI.OnChange -= ApplyChanges;
+    }
+
+    private void ApplyChanges()
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    string pointcolor(double distance)
+    {
+        if (distance > WarnDistance) return "white";
+        if (distance > MinDistance) return "yellow";
+        return "red";
+
+    }
+
+    double disttomap(double dist)
+    {
+        return (dist / MaxDisplayDistance) * (Size / 2);
+    }
+
+    void zoomchanged(ChangeEventArgs ev)
+    {
+        MaxDisplayDistance = double.Parse(ev.Value.ToString());
+        StateHasChanged();
+    }
+}

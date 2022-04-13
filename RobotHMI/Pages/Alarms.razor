@@ -1,0 +1,57 @@
+﻿@page "/Alarms"
+@using RobotHMI.Data
+@inject RobotClientService RobotCLI
+
+<table class="table table-sm table-dark">
+    <thead>
+        <tr>
+            <th scope="col"><h4>Time</h4></th>
+            <th scope="col"><h4>Description / Code</h4></th>
+            <th scope="col">
+                <button class="btn btn-sm btn-outline-primary btn-rounded" @onclick="clear">
+                    <img class="fa fa-fw fa-trash" />Clear
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var x in RobotCLI.Alarms.Values.Where(x => x.Active))
+        {
+            <tr>
+                <th scope="row">
+                    <h5>@x.ActivationDate.ToString("T")</h5>
+               </th>
+                <td><h5>@x.Name</h5></td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+    </table>
+
+
+    @code {
+        protected override void OnInitialized()
+        {
+            RobotCLI.OnChange += ApplyChanges;
+            RobotCLI.OnAlarmChange += ApplyChanges;
+            base.OnInitialized();
+        }
+
+        public void Dispose()
+        {
+            RobotCLI.OnChange -= ApplyChanges;
+            RobotCLI.OnAlarmChange -= ApplyChanges;
+        }
+
+        private void ApplyChanges()
+        {
+            InvokeAsync(() => StateHasChanged());
+        }
+
+        private void clear()
+        {
+
+            RobotCLI.ClearAlarms();
+        }
+
+    }

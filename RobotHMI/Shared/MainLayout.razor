@@ -1,0 +1,274 @@
+﻿@inherits LayoutComponentBase
+@inject RobotHMI.Data.RobotClientService RobotCLI
+<PageTitle>RobotHMI</PageTitle>
+
+@*<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+*@
+
+<div class="main">
+    <header style="padding-bottom:0;padding-top:1px">
+        <div class="container-fullwidth">
+            <div class="row top-bar">
+                <div class="col-12 col-md-10 order-md-2">
+                    <div class="header-card">
+                        <span class="corner-border-top"></span>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <strong>Local Time</strong>
+                                </div>
+                                <div class="col">
+                                    <strong>Status</strong>
+                                </div>
+                                <div class="col">
+                                    <strong>Battery</strong>
+                                </div>
+                                <div class="col">
+                                    <strong>Temp</strong>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h1>
+                                       @(System.DateTime.Now.ToString("HH:mm:ss"))
+                                    </h1>
+                                </div>
+                                <div class="col">
+                                    <h1>
+                                        @if (RobotCLI.RobotStatus() == null)
+                                        {
+                                            <span class="text-danger">N/A</span>
+                                        }else
+                                        {
+                                            @(RobotCLI.RobotStatus().ToUpper())
+                                        }
+                                    </h1>
+                                </div>
+                                <div class="col">
+                                    <h1>
+                                        <span class="text-danger @(showifconnected(false, "text-hide"))">N/A</span>
+                                        @if (RobotCLI.RobotStatus != null)
+                                        {
+                                            <span class=" @(showifconnected(true, "text-hide"))">@(RobotCLI.GetBattery().ToString("0.0"))V&nbsp;</span>
+
+                                            @switch (RobotCLI.GetBatteryLevelIndex())
+                                            {
+                                                case 0:
+                                                    <span class="text-danger"><i class="fa fa-fw fa-battery-empty"></i></span>
+                                                    break;
+                                                case 1:
+                                                    <span class="text-warning"><i class="fa fa-fw fa-battery-quarter"></i></span>
+                                                    break;
+                                                case 2:
+                                                    <span class="text-warning"><i class="fa fa-fw fa-battery-half"></i></span>
+                                                    break;
+                                                case 3:
+                                                    <span class="text-primary"><i class="fa fa-fw fa-battery-three-quarters"></i></span>
+                                                    break;
+                                                case 4:
+                                                    <span class="text-primary"><i class="fa fa-fw fa-battery-full"></i></span>
+                                                    break;
+                                            }
+
+                                        }
+                                    </h1>
+                                </div>
+                                <div class="col">
+                                    <h1>
+                                       @* @if (RobotCLI.RobotStatus == null)
+                                        {
+                                            <span class="text-danger">N/A</span>
+                                        }
+                                        else
+                                        {*@
+                                            <span>@(RobotCLI.GetTemperature().ToString("0.0"))°C</span>
+                                        @*}*@
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="corner-border-bottom"></span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-1 order-md-1">
+                    <div class="header-card">
+                        <span class="corner-border-top"></span>
+                        <a href="/"><img src="images/Logo.png" width="50" height="50" alt="Logo" class="img-fluid logo" /></a>
+                        <span class="corner-border-bottom"></span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-1 order-md-3">
+                    <div class="header-card">
+                        <span class="corner-border-top"></span>
+                        <button class="main-menu-toggle" type="button" data-toggle="collapse" href="#main-menu2"><i class="fa fa-bars"></i></button>
+                        <span class="corner-border-bottom"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="container-fullwidth">
+            <nav id="main-menu2" class="navbar collapse show">
+                <div class="navbar-expand">
+                    <ul class="navbar-nav mr-auto ">
+                        <li class="nav-item">
+                            <NavLink href="/" class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-primary nomargin-bottom">
+                                <i class="fa fa-home"></i>&nbsp;General
+                            </NavLink>
+                        </li>
+                        <li class="nav-item active">
+                            <NavLink class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-highlight nomargin-bottom" href="Lidar">
+                                <svg width="1em" height="1em"
+                                     alignment-baseline="central"
+                                     viewBox="0 0 16 16" class="bi bi-bullseye svg-inline--fa"
+                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path fill-rule="evenodd" d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10zm0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                                    <path fill-rule="evenodd" d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                                    <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                </svg>&nbsp;Lidar
+                            </NavLink>
+                        </li>
+                        <li class="nav-item active">
+                            <NavLink class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-highlight nomargin-bottom" href="Setup">
+                                <i class="fa fa-wrench"></i>&nbsp;Setup
+                            </NavLink>
+                        </li>
+                        <li class="nav-item active">
+                            <NavLink class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-highlight nomargin-bottom" href="Alarms" @onclick="ResetCounter">
+                                <i class="fa fa-bell"></i>&nbsp;Alarms&nbsp;
+                                @if (AlarmCount > 0)
+                                {
+                                    <span class="badge badge-primary">@AlarmCount</span>
+                                }
+                            </NavLink>
+                        </li>
+                        <li class="nav-item active">
+                            <NavLink class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-highlight nomargin-bottom" href="Log">
+                                <i class="fa fa-stethoscope"></i>&nbsp;Log
+                            </NavLink>
+                        </li>
+                        <li class="nav-item active">
+                            <NavLink class="btn btn-primary nomargin-bottom" ActiveClass="btn btn-highlight nomargin-bottom" href="Tasks">
+                                <i class="fa fa-tasks"></i>&nbsp;Tasks
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>*@
+        <div class="container-fullwidth">
+            <nav id="main-menu2" class="navbar collapse show">
+                <div class="row">
+                    <div class="col nopadding">
+                        <NavLink href="/" class="btn btn-primary nomargin-bottom btn-block" ActiveClass="btn btn-primary nomargin-bottom btn-block">
+                            <i class="fa fa-home fa-2x" aria-label="General"></i>
+                            <br />
+                            General
+                        </NavLink>
+                    </div>
+                    <div class="col nopadding">
+                        <NavLink class="btn btn-primary nomargin-bottom btn-block" ActiveClass="btn btn-highlight nomargin-bottom btn-block" href="Lidar">
+                            <i class="fa fa-bullseye fa-2x"></i>
+                            <br />
+                            Lidar
+                        </NavLink>
+                    </div>
+                    <div class="col nopadding">
+                        <NavLink class="btn btn-primary nomargin-bottom btn-block" ActiveClass="btn btn-highlight nomargin-bottom btn-block" href="Setup">
+                            <i class="fa fa-wrench fa-2x"></i>
+                            <br />
+                            Setup
+                        </NavLink>
+                    </div>
+                    <div class="col nopadding ">
+                        <NavLink class="btn btn-primary nomargin-bottom btn-block text-nowrap" ActiveClass="btn btn-highlight nomargin-bottom btn-block text-nowrap" href="Alarms" @onclick="ResetCounter">
+                            <i class="fa fa-bell fa-2x"></i>
+                            <br />
+                            Alarms @if (AlarmCount > 0){<span class="badge badge-primary">@AlarmCount</span>}
+                        </NavLink>
+                    </div>
+                    <div class="col nopadding">
+                        <NavLink class="btn btn-primary nomargin-bottom btn-block" ActiveClass="btn btn-highlight nomargin-bottom btn-block" href="Log">
+                            <i class="fa fa-stethoscope fa-2x"></i><br />Log
+                        </NavLink>
+                    </div>
+                    <div class="col nopadding">
+                        <NavLink class="btn btn-primary nomargin-bottom btn-block" ActiveClass="btn btn-highlight nomargin-bottom btn-block" href="Tasks">
+                            <i class="fa fa-tasks fa-2x"></i><br />Tasks
+                        </NavLink>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container-fullwidth compact">
+        @Body
+    </div>
+</div>
+
+@code {
+
+     private int AlarmCount = 0;
+
+     private void ResetCounter()
+    {
+        AlarmCount = 0;
+    }
+
+    private string showifconnected(bool match, string value)
+    {
+        bool isnull = RobotCLI.RobotStatus == null;
+        if (isnull == match)
+        {
+            return value;
+        } else
+        {
+            return "";
+        }
+    }
+
+    protected override void OnInitialized()
+        {
+            RobotCLI.OnChange += ApplyChanges;
+            RobotCLI.OnAlarmChange += NotifyAlarm;
+            AlarmCount = RobotCLI.AlarmsCount();
+            base.OnInitialized();
+        }
+
+    public void Dispose()
+    {
+        RobotCLI.OnChange -= ApplyChanges;
+        RobotCLI.OnAlarmChange -= NotifyAlarm;
+    }
+
+    private void ApplyChanges()
+    {
+        InvokeAsync(() =>  StateHasChanged());
+    }
+
+     private void NotifyAlarm()
+    {
+        InvokeAsync(
+            () =>
+            {
+                AlarmCount = RobotCLI.AlarmsCount();
+                StateHasChanged();
+            }
+        );
+    }
+}

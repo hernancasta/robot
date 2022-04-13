@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>01a4db81-91e1-4652-9883-370e82144b4f</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\AlarmMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\GamePadMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\LidarMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\ObjectDetectionMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\TagMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\RedisOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Streaming\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Streaming\RedisStreamPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Streaming\RedisStreamSubscriber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ISerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\SystemTextJsonSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Streaming\DefaultStreamPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Streaming\DefaultStreamSubscriber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Streaming\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Streaming\IStreamPublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Streaming\IStreamSubscriber.cs" />
+  </ItemGroup>
+</Project>
