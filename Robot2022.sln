@@ -14,21 +14,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotHMI", "RobotHMI\RobotHMI.csproj", "{5ED1FBDB-AD00-4CA7-BE3F-B28FAA68B09F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotHMI", "RobotHMI\RobotHMI.csproj", "{5ED1FBDB-AD00-4CA7-BE3F-B28FAA68B09F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamePadService", "GamePadService\GamePadService.csproj", "{3B9C5F9C-5098-4077-9B47-1D8B9632DB6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamePadService", "GamePadService\GamePadService.csproj", "{3B9C5F9C-5098-4077-9B47-1D8B9632DB6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{B92F7FCE-8AF6-46C5-A920-DAEB24C37EC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tester", "Tester\Tester.csproj", "{B92F7FCE-8AF6-46C5-A920-DAEB24C37EC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D757919D-4C2B-4688-8BD3-3F6B1D9FF88A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabertoothService", "SabertoothService\SabertoothService.csproj", "{3AD5F22F-77FF-4A5C-88C4-9EB085E03C31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetsonDetectionService", "JetsonDetectionService\JetsonDetectionService.csproj", "{6B4EEEFE-1854-4537-925C-D6865C3FF6BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JetsonDetectionService", "JetsonDetectionService\JetsonDetectionService.csproj", "{6B4EEEFE-1854-4537-925C-D6865C3FF6BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncoderESP32Service", "EncoderESP32Service\EncoderESP32Service.csproj", "{1020FB42-B4E2-4084-B327-8DAB93BFE7B3}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{01a4db81-91e1-4652-9883-370e82144b4f}*SharedItemsImports = 13
+		Shared\Shared.projitems*{1020fb42-b4e2-4084-b327-8dab93bfe7b3}*SharedItemsImports = 5
 		Shared\Shared.projitems*{3ad5f22f-77ff-4a5c-88c4-9eb085e03c31}*SharedItemsImports = 5
 		Shared\Shared.projitems*{3b9c5f9c-5098-4077-9b47-1d8b9632db6e}*SharedItemsImports = 5
 		Shared\Shared.projitems*{5c0651a1-1cc8-494f-a3d6-406e212b7fed}*SharedItemsImports = 5
@@ -70,6 +73,10 @@ Global
 		{6B4EEEFE-1854-4537-925C-D6865C3FF6BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B4EEEFE-1854-4537-925C-D6865C3FF6BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B4EEEFE-1854-4537-925C-D6865C3FF6BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1020FB42-B4E2-4084-B327-8DAB93BFE7B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1020FB42-B4E2-4084-B327-8DAB93BFE7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1020FB42-B4E2-4084-B327-8DAB93BFE7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1020FB42-B4E2-4084-B327-8DAB93BFE7B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +86,7 @@ Global
 		{3B9C5F9C-5098-4077-9B47-1D8B9632DB6E} = {D757919D-4C2B-4688-8BD3-3F6B1D9FF88A}
 		{3AD5F22F-77FF-4A5C-88C4-9EB085E03C31} = {D757919D-4C2B-4688-8BD3-3F6B1D9FF88A}
 		{6B4EEEFE-1854-4537-925C-D6865C3FF6BA} = {D757919D-4C2B-4688-8BD3-3F6B1D9FF88A}
+		{1020FB42-B4E2-4084-B327-8DAB93BFE7B3} = {D757919D-4C2B-4688-8BD3-3F6B1D9FF88A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B45D784F-44BD-48F1-A1B2-B0926B83AFB2}
