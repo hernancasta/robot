@@ -9,12 +9,26 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Command\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\CommandHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\CommandListenerService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\ICommandHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\MotorCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AlarmMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\GamePadMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\LidarMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\ObjectDetectionMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\TagMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\DefaultMessagePublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\DefaultMessageSubscriber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\IMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\IMessagePublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messaging\IMessageSubscriber.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Redis\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Messaging\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Messaging\RedisMessagePublisher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Redis\Messaging\RedisMessageSubscriber.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Redis\RedisOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Redis\Streaming\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Redis\Streaming\RedisStreamPublisher.cs" />

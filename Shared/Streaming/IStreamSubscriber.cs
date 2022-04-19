@@ -9,6 +9,5 @@ namespace Shared.Streaming
     {
         Task SubscribeAsync<T>(string topic, Action<T> handler) where T : class;
 
-       // IEnumerable<T> Snapshot<T>(string topic) where T : class;
     }
 }

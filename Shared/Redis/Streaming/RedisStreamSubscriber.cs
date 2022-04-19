@@ -21,21 +21,6 @@ namespace Shared.Redis.Streaming
             _connectionMultiplexer = connectionMultiplexer;
         }
 
-        public IEnumerable<T> Snapshot<T>(string topic) where T : class
-        {
-            var _server = _connectionMultiplexer.GetServer(_connectionMultiplexer.GetEndPoints()[0]);
-            IDatabase db = _connectionMultiplexer.GetDatabase();
-
-            
-            List<T> result = new List<T>();
-            foreach(var obj in _server.Keys())
-            {
-                
-                result.Add(_serializer.Deserialize<T>((db.StringGet(obj))));
-            }
-            return result;
-        }
-
         public Task SubscribeAsync<T>(string topic, Action<T> handler) where T : class => _subscriber.SubscribeAsync(topic, (_, data) => {
             try
             {

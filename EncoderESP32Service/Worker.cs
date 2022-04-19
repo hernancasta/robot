@@ -35,7 +35,7 @@ namespace EncoderESP32Service
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                string line = await serial.ReadLineAsync();
+                string line = serial.ReadLine();
                 if (!string.IsNullOrEmpty(line))
                 {
                     string[] indata = line.Split(',');
