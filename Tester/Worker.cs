@@ -1,17 +1,22 @@
+using Shared.Command;
+using Shared.Command.Movement;
 using Shared.Data;
 using Shared.Streaming;
 
 namespace Tester
 {
-    public class Worker : BackgroundService
+    internal class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IStreamSubscriber _streamSubscriber;
+        private readonly ICommandHandler<MotorCommand> _commandHandler;
 
-        public Worker(ILogger<Worker> logger, IStreamSubscriber streamSubscriber)
+        public Worker(ILogger<Worker> logger, IStreamSubscriber streamSubscriber, 
+            ICommandHandler<MotorCommand> commandHandler)
         {
             _logger = logger;
             _streamSubscriber = streamSubscriber;
+            _commandHandler = commandHandler;   
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,6 +25,11 @@ namespace Tester
             {
                 _logger.LogInformation($"{DateTime.Now} Receiving gamepad: {data.Axes.Count()} axis, {data.Buttons.Count()} buttons");
             });
+
+            //await _streamSubscriber.SubscribeAsync<string>("__keyspace@0__:*", (data) =>
+            //{
+            //    _logger.LogInformation($"{DateTime.Now} Receiving event: {data} ");
+            //});
 
             //await _streamSubscriber.SubscribeAsync<AlarmMessage>("ALARM.*", (data) => {
             //    _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.Name} {data.Active}");
@@ -37,6 +47,17 @@ namespace Tester
             //        _logger.LogInformation($"{detection.Name} {detection.Confidence} {detection.Left} {detection.Right} {detection.Top} {detection.Bottom}");
             //    }
             //});
+
+
+            int i = 0;
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Delay(5000);
+                Console.WriteLine($"send {i}");
+                _ = _commandHandler.HandleAsync(new MotorCommand());
+                i++;
+                await Task.Delay(500000);
+            }
         }
     }
 }
