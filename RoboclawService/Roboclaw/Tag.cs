@@ -33,7 +33,7 @@ namespace RoboclawService.Roboclaw
         public Tag(string tagName, PerformActionFunction<T> func, double tagScale = 1) { 
             TagName = tagName; 
             PerformAction = func;
-            TagScale = TagScale;
+            TagScale = tagScale;
         }
 
         public override bool DoReading()
