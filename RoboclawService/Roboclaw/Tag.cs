@@ -14,9 +14,11 @@ namespace RoboclawService.Roboclaw
         public abstract bool DoReading();
 
         public abstract IEnumerable<Reading> Getreadings();
+
+        public double TagScale { get; protected set; }
     }
 
-    public record Reading(string TagName, object TagValue);
+    public record Reading(string TagName, object TagValue, double TagScale);
 
     internal class Tag<T> : Tag where T : struct, IEquatable<T>
     {
@@ -28,9 +30,10 @@ namespace RoboclawService.Roboclaw
 
         public T TagValue { get; private set; }
 
-        public Tag(string tagName, PerformActionFunction<T> func) { 
+        public Tag(string tagName, PerformActionFunction<T> func, double tagScale = 1) { 
             TagName = tagName; 
             PerformAction = func;
+            TagScale = TagScale;
         }
 
         public override bool DoReading()
@@ -54,7 +57,7 @@ namespace RoboclawService.Roboclaw
 
         public override IEnumerable<Reading> Getreadings()
         {
-            return new Reading[] { new Reading(TagName, TagValue) };
+            return new Reading[] { new Reading(TagName, TagValue, TagScale) };
         }
     }
 
@@ -71,11 +74,12 @@ namespace RoboclawService.Roboclaw
         public T TagValue1 { get; private set; }
         public T TagValue2 { get; private set; }
 
-        public DoubleTag(string tagName1, string tagName2, PerformDoubleActionFunction<T> func)
+        public DoubleTag(string tagName1, string tagName2, PerformDoubleActionFunction<T> func, double tagScale = 1)
         {
             TagName1 = tagName1;
             TagName2 = tagName2;
             PerformAction = func;
+            TagScale = tagScale;
         }
 
         public override bool DoReading()
@@ -106,8 +110,8 @@ namespace RoboclawService.Roboclaw
         public override IEnumerable<Reading> Getreadings()
         {
             return new Reading[] {
-                new Reading(TagName1, TagValue1),
-                new Reading(TagName2, TagValue2)
+                new Reading(TagName1, TagValue1, TagScale),
+                new Reading(TagName2, TagValue2, TagScale)
             };
         }
     }

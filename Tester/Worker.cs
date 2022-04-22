@@ -34,11 +34,12 @@ namespace Tester
             //await _streamSubscriber.SubscribeAsync<AlarmMessage>("ALARM.*", (data) => {
             //    _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.Name} {data.Active}");
             //});
-
-            //await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.*", (data) => {
-            //    _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.TagName} {data.TagValue}");
-            //});
-
+            /*
+            await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.*", (data) =>
+            {
+                _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.TagName} {data.TagValue}");
+            });
+            */
             //await _streamSubscriber.SubscribeAsync<ObjectDetectionFrameMessage>("object_detection", (data) =>
             //{
             //    _logger.LogInformation($"{DateTime.Now} Receiving frame: {data.Detections.Count()}");
@@ -52,11 +53,10 @@ namespace Tester
             int i = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(5000);
                 Console.WriteLine($"send {i}");
                 _ = _commandHandler.HandleAsync(new MotorCommand());
                 i++;
-                await Task.Delay(500000);
+                await Task.Delay(20000);
             }
         }
     }

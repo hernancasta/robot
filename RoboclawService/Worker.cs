@@ -30,7 +30,7 @@ namespace RoboclawService
             tags.Add(new Tag<double>("Temperature1", _roboclaw.GetTemperature));
             tags.Add(new Tag<double>("Temperature2", _roboclaw.GetTemperature));
 
-            tags.Add(new DoubleTag<short>("Current1", "Current2", _roboclaw.GetCurrents));
+            tags.Add(new DoubleTag<short>("Current1", "Current2", _roboclaw.GetCurrents, 100));
             tags.Add(new DoubleTag<int>  ("Speed1",   "Speed2",   _roboclaw.GetISpeeds));
             tags.Add(new DoubleTag<int>  ("Encoder1", "Encoder2", _roboclaw.GetEncoders));
 
@@ -46,7 +46,7 @@ namespace RoboclawService
                         foreach(var measure in tag.Getreadings())
                         {
                             await _streamPublisher.PublishAsync($"TAG.{measure.TagName}",
-                                new TagMessage { TagName = measure.TagName, TagValue = (double)measure.TagValue });
+                                new TagMessage { TagName = measure.TagName, TagValue = Convert.ToDouble(measure.TagValue) / measure.TagScale});
                         }
                     }
                 }
