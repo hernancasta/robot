@@ -71,6 +71,7 @@ namespace SabertoothService
                 var SignalA2 = await SendCommand($"A2: GET");
                 var SignalS1 = await SendCommand($"S1: GET");
                 var SignalS2 = await SendCommand($"S2: GET");
+
                 if (_Battery != Battery.value || counterSnapshot==0)
                 {
                     _Battery = Battery.value;

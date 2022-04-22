@@ -6,5 +6,6 @@ namespace Shared.Command.Movement
 {
     internal class MotorCommand : Command
     {
+
     }
 }

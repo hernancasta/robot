@@ -11,18 +11,18 @@ using Shared.Streaming;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
-//        services.AddSingleton<ICommandHandler<MotorCommand>, CommandHandler<MotorCommand>>();
-  //      services.AddHostedService<Worker>();
+        //        services.AddSingleton<ICommandHandler<MotorCommand>, CommandHandler<MotorCommand>>();
+        //        services.AddHostedService<Worker>();
 
         services.AddStreaming()
             .AddRedisStreaming()
             .AddRedis(hostContext.Configuration)
             .AddSerialization()
-            //.AddHostedService<Worker>()
             .AddMessaging()
             .AddRedisMessaging()
-            .AddHostedService<MotorCommandListener>(); //listen messages of type MotorCommand.
-
+            .AddSingleton<RoboclawService.Roboclaw.Roboclaw>()
+            .AddHostedService<MotorCommandListener>() //listen messages of type MotorCommand.
+            ;
     })
     .Build();
 

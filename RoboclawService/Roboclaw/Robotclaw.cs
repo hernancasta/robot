@@ -10,14 +10,25 @@ namespace RoboclawService.Roboclaw
 {
     internal class Roboclaw : SerialPort
     {
+        IConfiguration _configuration;
+        public Roboclaw(IConfiguration configuration)
+        {
+            _configuration = configuration;
+
+            var port = _configuration.GetValue<string>("Roboclaw:Port");
+            var speed = _configuration.GetValue<int>("Roboclaw:Speed");
+            var address = _configuration.GetValue<byte>("Roboclaw:Address");
+
+            this.PortName = port;
+            this.BaudRate = speed;
+            m_address = address;
+            this.ReadTimeout = 500;
+            this.WriteTimeout = 500;
+            this.Open();
+        }
+
         private static object _lock = new object();
         readonly byte m_address;
-        public Roboclaw(string port, int baudrate, byte address)
-        {
-            this.PortName = port;
-            this.BaudRate = baudrate;
-            m_address = address;
-        }
 
         public bool ST_M1Forward(byte pwr)
         {
@@ -960,11 +971,15 @@ namespace RoboclawService.Roboclaw
                 Write(buffer, 0, buffer.Length);
                 try
                 {
-                    ReadByte();
+                    var result = ReadByte();
+
                 }
                 catch (TimeoutException)
                 {
-//                    Trace.WriteLine("SendCommand Timeout:" + data[1].ToString());
+                    //                    Trace.WriteLine("SendCommand Timeout:" + data[1].ToString());
+                    return false;
+                }
+                catch (Exception ex) {
                     return false;
                 }
             }
