@@ -22,44 +22,33 @@ namespace RoboclawService
 
         protected override void ExecuteCommand(MotorCommand Message)
         {
-            //            UInt32 status =0;
-            //            var result = client.GetStatus(ref status);
 
-            //double temp = 0;
-            //var result = client.GetTemperature(ref temp);
+            bool commandResult = false;
 
-            //            var result = client.MixedSpeedDistance(100000, 10000, 100000, 10000, 1);
-            //var result = _client.M1Speed(1000);
-            //var result = _client.MixedSpeed(2000, 2000);
+            if (Message is PositionMotorCommand)
+            {
+                commandResult = _client.MixedSpeedAccelDistance(
+                    (Message as PositionMotorCommand).Acceleration,
+                    (Message as PositionMotorCommand).Motor1Speed,
+                    (Message as PositionMotorCommand).Position1,
+                    (Message as PositionMotorCommand).Motor2Speed,
+                    (Message as PositionMotorCommand).Position2,1)
+                    ;
+            } else if (Message is SpeedMotorCommand)
+            {
+                commandResult = _client.MixedSpeedAccel(
+                    (Message as SpeedMotorCommand).Acceleration,
+                    (Message as SpeedMotorCommand).Motor1Speed,
+                    (Message as SpeedMotorCommand).Motor2Speed
+                    );
+            } 
 
-            int M1cnt=0, M2cnt=0;
-
-            var r = _client.GetEncoders(ref M1cnt, ref M2cnt);
-
-            Console.WriteLine($"{M1cnt} {M2cnt}");
-
-            var result1 = _client.SetEncoder1(0);
-            var result2 = _client.SetEncoder2(0);
-
-            var result = _client.MixedSpeedDistance(3000, 10000, 3000, 10000, 0);
-            if (result)
-
-                /* *************************************************
-                Console.WriteLine($"Status {status.ToString("X")}");
-                if (status != 0)
-                {
-                    foreach(var alarm in status.ToAlarms())
-                    {
-                        Console.WriteLine(alarm);
-                    }
-                }
-                */
-
+/*
+            if (commandResult)
                 Console.WriteLine("Executed Movement");
             else
                 Console.WriteLine("Error receiving data");
-
-            
+  */          
         }
     }
 }
