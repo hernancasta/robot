@@ -25,30 +25,41 @@ namespace RoboclawService
 
             bool commandResult = false;
 
-            if (Message is PositionMotorCommand)
+            switch (Message.MovementType)
             {
-                commandResult = _client.MixedSpeedAccelDistance(
-                    (Message as PositionMotorCommand).Acceleration,
-                    (Message as PositionMotorCommand).Motor1Speed,
-                    (Message as PositionMotorCommand).Position1,
-                    (Message as PositionMotorCommand).Motor2Speed,
-                    (Message as PositionMotorCommand).Position2,1)
-                    ;
-            } else if (Message is SpeedMotorCommand)
-            {
-                commandResult = _client.MixedSpeedAccel(
-                    (Message as SpeedMotorCommand).Acceleration,
-                    (Message as SpeedMotorCommand).Motor1Speed,
-                    (Message as SpeedMotorCommand).Motor2Speed
-                    );
-            } 
+                case MovementType.Speed:
+                    {
+                        commandResult = _client.MixedSpeedAccel(
+                            Message.Acceleration,
+                            Message.Motor1Speed,
+                            Message.Motor2Speed
+                            );
+                        break;
+                    }
+                case MovementType.Position:
+                    {
+                        commandResult = _client.MixedSpeedAccelDistance(
+                            Message.Acceleration,
+                            Message.Motor1Speed,
+                            Message.Position1,
+                            Message.Motor2Speed,
+                            Message.Position2, 1)
+                            ;
+                        break;
+                    }
+                default:
+                    {
+                        Console.WriteLine($"Movement type: {Message.MovementType} not defined");
+                        break;
+                    }
+            }
 
-/*
+
             if (commandResult)
                 Console.WriteLine("Executed Movement");
             else
                 Console.WriteLine("Error receiving data");
-  */          
+
         }
     }
 }
