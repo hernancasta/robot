@@ -24,15 +24,16 @@ namespace RoboclawService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            List<Tag> tags = new List<Tag>();
+            List<object> tags = new List<object>();
+            List<object> groupedtags = new List<object>();
 
             tags.Add(new Tag<double>("Battery", _roboclaw.GetMainVoltage )) ;
             tags.Add(new Tag<double>("Temperature1", _roboclaw.GetTemperature));
             tags.Add(new Tag<double>("Temperature2", _roboclaw.GetTemperature));
 
-            tags.Add(new DoubleTag<short>("Current1", "Current2", _roboclaw.GetCurrents, 100));
-            tags.Add(new DoubleTag<int>  ("Speed1",   "Speed2",   _roboclaw.GetISpeeds));
-            tags.Add(new DoubleTag<int>  ("Encoder1", "Encoder2", _roboclaw.GetEncoders));
+            groupedtags.Add(new TagGroup<short>("Current1", "Current2", _roboclaw.GetCurrents,"Currents", 100));
+            groupedtags.Add(new TagGroup<int>  ("Speed1",   "Speed2",   _roboclaw.GetISpeeds, "Speeds"));
+            groupedtags.Add(new TagGroup<int>  ("Encoder1", "Encoder2", _roboclaw.GetEncoders, "Encoders"));
 
             int counterSnapshot = 0;
 
@@ -41,15 +42,25 @@ namespace RoboclawService
             Dictionary<string, bool> changedAlarms = new Dictionary<string, bool>();
 
             while (!stoppingToken.IsCancellationRequested) {
-                foreach (var tag in tags) {
+
+                foreach (Tag tag in tags) {
                     if (tag.DoReading() || counterSnapshot == 0) {
-                        foreach(var measure in tag.Getreadings())
-                        {
-                            await _streamPublisher.PublishAsync($"TAG.{measure.TagName}",
-                                new TagMessage { TagName = measure.TagName, TagValue = Convert.ToDouble(measure.TagValue) / measure.TagScale});
-                        }
+                        var measure = tag.GetReading();
+                        var tagmessage = new TagMessage { TagName = measure.TagName, TagValue = Convert.ToDouble(measure.TagValue) / measure.TagScale };
+                        await _streamPublisher.PublishAsync($"TAG.{measure.TagName}",
+                            tagmessage);
                     }
                 }
+                foreach(TagGroup tag in groupedtags)
+                {
+                    if (tag.DoReading() || counterSnapshot == 0)
+                    {
+                        var tagmessages = tag.GetReadings();
+                        await _streamPublisher.PublishAsync($"TAGGROUP.{((TagGroup)tag).TagGroupName}",
+                            new TagGroupMessage { Tags = tagmessages.ToTagMessageList() });
+                    }
+                }
+
 
                 uint status = 0;
                 if (_roboclaw.GetStatus(ref status)) {
