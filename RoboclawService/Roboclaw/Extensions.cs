@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -111,6 +112,18 @@ namespace RoboclawService.Roboclaw
         {
             return (Int16)(((value & 0x00FF) << 16) |
                 (value & 0xFF00) >> 8);
+        }
+
+        internal static List<TagMessage> ToTagMessageList(this IEnumerable<Reading> list)
+        {
+            List<TagMessage> result = new List<TagMessage>();
+
+            foreach(var item in list)
+            {
+                result.Add(new TagMessage { TagName = item.TagName, TagValue = Convert.ToDouble(item.TagValue) / item.TagScale });
+            }
+
+            return result;
         }
 
     }

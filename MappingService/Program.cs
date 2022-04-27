@@ -15,7 +15,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             .AddSerialization()
             .AddMessaging()
             .AddRedisMessaging()
-            //.AddSingleton<RoboclawService.Roboclaw.Roboclaw>()
+            .AddSingleton<MappingService.SLAM.SlamProcessor>()
             //.AddHostedService<MotorCommandListener>() //listen messages of type MotorCommand.
             .AddHostedService<Worker>()
             ;

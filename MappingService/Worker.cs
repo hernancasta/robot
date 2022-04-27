@@ -11,16 +11,18 @@ namespace MappingService
         private readonly IStreamSubscriber _streamSubscriber;
         private readonly IConfiguration _configuration;
         private readonly IStreamPublisher _streamPublisher;
+        private readonly SlamProcessor slam;
 
         private Vector3 OdoPose; 
 
         public Worker(ILogger<Worker> logger, IStreamSubscriber streamSubscriber, 
-            IConfiguration configuration, IStreamPublisher streamPublisher)
+            IConfiguration configuration, IStreamPublisher streamPublisher, SlamProcessor slamProcessor)
         {
             _logger = logger;
             _streamSubscriber = streamSubscriber;
             _configuration = configuration;
             _streamPublisher = streamPublisher;
+            slam = slamProcessor;
         }
 
         private double LastEncoder1 = double.NaN;
@@ -36,56 +38,44 @@ namespace MappingService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var mapSize = _configuration.GetValue<int>("MappingService:MapSize");
-            var cellSize = _configuration.GetValue<double>("MappingService:CellSize"); //mts
             _WheelDiameter = _configuration.GetValue<double>("MappingService:WheelDiameter");
             _CountsPerTurn = _configuration.GetValue<double>("MappingService:CountsPerTurn");
             _DistanceBetweenWheels = _configuration.GetValue<double>("MappingService:DistanceBetweenWheels");
 
-            float physicalMapSize = 40.0f;
-            Int32 holeMapSize = 1024;// ; 256;
-            Int32 obstacleMapSize = 1024;//64;
-            Single sigmaXY = 0.05f;
-            Single sigmaTheta = (2.0f).DegToRad();
-            int iterations = 1000;
+            OdoPose = slam.Pose;// new Vector3(physicalMapSize/2, physicalMapSize/2, 0f);
 
-            OdoPose = new Vector3(physicalMapSize/2, physicalMapSize/2, 0f);
 
-            SLAM.SlamProcessor slam = new SLAM.SlamProcessor(physicalMapSize, holeMapSize,
-                obstacleMapSize, OdoPose, sigmaXY, sigmaTheta, iterations, 0)
-            {
-                HoleWidth = 0.5f// 1.0f
-            };
+            //SLAM.SlamProcessor slam = new SLAM.SlamProcessor(physicalMapSize, holeMapSize,
+            //    obstacleMapSize, OdoPose, sigmaXY, sigmaTheta, iterations, 0).
+            //{
+            //    HoleWidth = 0.5f// 1.0f
+            //};
 
             LidarMessage lastScan = null;
 
             await _streamSubscriber.SubscribeAsync<LidarMessage>("lidar", (data) => {
-
                 lastScan = data;
-/*                
-                new ScanSegment()
-                {
-                    IsLast = false,
-                    Pose = OdoPose,
-                    Rays = data.Measurements.Where(x => x.Quality>8 && x.Distance>0).ToList()
-                };
-*/
             });
 
             System.Collections.Concurrent.ConcurrentQueue<ScanSegment> scans = new System.Collections.Concurrent.ConcurrentQueue<ScanSegment>();
 
-            await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.Encoder*", (tag) => {
+            await _streamSubscriber.SubscribeAsync<TagGroupMessage>("TAGGROUP.Encoders", (tag) => {
 
                 if (lastScan == null) return;
 
-                if (tag.TagName == "Encoder1")
-                {
-                    CurrentEncoder1 = tag.TagValue;
-                }
-
-                if (tag.TagName == "Encoder2")
-                {
-                    CurrentEncoder2 = tag.TagValue;
+                foreach (var t in tag.Tags) {
+                    switch (t.TagName) {
+                        case "Encoder1":
+                            {
+                                CurrentEncoder1 = t.TagValue;
+                                break;
+                            }
+                        case "Encoder2":
+                            {
+                                CurrentEncoder2 = t.TagValue;
+                                break;
+                            }
+                    }
                 }
 
                 // calculo distancia orientacion.

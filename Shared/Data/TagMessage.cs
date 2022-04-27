@@ -9,4 +9,9 @@ namespace Shared.Data
         public string TagName { get; set; }
         public double TagValue { get; set; }
     }
+
+    internal class TagGroupMessage
+    {
+        public List<TagMessage> Tags { get; set; }
+    }
 }

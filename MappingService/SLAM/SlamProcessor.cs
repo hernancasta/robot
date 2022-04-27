@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MappingService.SLAM
 {
-    internal class SlamProcessor
+    public class SlamProcessor
     {
         // Constants
         private const ushort TS_NO_OBSTACLE = 65500;
@@ -35,12 +35,12 @@ namespace MappingService.SLAM
         /// <summary>
         /// Hole map
         /// </summary>
-        public HoleMap HoleMap { get; }
+        internal HoleMap HoleMap { get; }
 
         /// <summary>
         /// Obstacle map
         /// </summary>
-        public ObstacleMap ObstacleMap { get; }
+        internal ObstacleMap ObstacleMap { get; }
 
 
         /// <summary>
@@ -98,30 +98,25 @@ namespace MappingService.SLAM
         /// </summary>
         public Vector3 Pose { get; private set; } = Vector3.Zero;
 
-
-
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="physicalMapSize">Physical map size in meters</param>
-        /// <param name="holeMapSize">Hole map size in pixels</param>
-        /// <param name="obstacleMapSize">Obstacle map size in pixels</param>
-        /// <param name="startPose">Start pose</param>
-        /// <param name="sigmaXY">Sigma XY in meters</param>
-        /// <param name="sigmaTheta">Sigma theta in radians</param>
-        /// <param name="iterationsPerThread">Search iterations per thread</param>
-        /// <param name="numSearchThreads">Number of search threads (1 or less for no threading)</param>
-        public SlamProcessor(float physicalMapSize, int holeMapSize, int obstacleMapSize, Vector3 startPose,
-            float sigmaXY, float sigmaTheta, int iterationsPerThread, int numSearchThreads)
+        public SlamProcessor(IConfiguration configuration)
         {
-            // Set properties
+            var physicalMapSize = configuration.GetValue<float>("MappingService:MapSize"); //40f
+            var holeMapSize = configuration.GetValue<Int32>("MappingService:HoleMapSize"); //1024
+            var obstacleMapSize = configuration.GetValue<Int32>("MappingService:ObstacleMapSize");//1024
+//            var startPose = configuration.GetValue<Vector3>("MappingService:HoleMapSize"); //{ x=20, y=20, z=0}
+            var sigmaXY = configuration.GetValue<float>("MappingService:SigmaXY"); // 0.5f
+            var sigmaTheta = configuration.GetValue<float>("MappingService:SigmaTheta"); // 2f
+            var iterations = configuration.GetValue<Int32>("MappingService:Iterations"); //1000
+            var holeWidth = configuration.GetValue<float>("MappingService:HoleWidth"); // 0.5f
+
             PhysicalMapSize = physicalMapSize;
-            this.startPose = startPose;
+            this.startPose = new Vector3(physicalMapSize/2, physicalMapSize/2,0);
             SigmaXY = sigmaXY;
-            SigmaTheta = sigmaTheta;
-            SearchIterationsPerThread = iterationsPerThread;
-            NumSearchThreads = numSearchThreads;
+            SigmaTheta = sigmaTheta.DegToRad();
+            SearchIterationsPerThread = iterations;
+            //NumSearchThreads = numSearchThreads;
+
+            HoleWidth = holeWidth;
 
             // Create maps
             HoleMap = new HoleMap(holeMapSize, physicalMapSize);
@@ -134,29 +129,32 @@ namespace MappingService.SLAM
 
             // Reset everything
             Reset();
-
-            /*
-            // Threaded mode or not ?
-            if (numSearchThreads <= 0)
-            {
-                worker = null;
-            }
-            else
-            {
-                worker = new ParallelWorker(NumSearchThreads, "CoreSLAM search");
-                randomQueuesXY = new Queue<float>[NumSearchThreads];
-                randomQueuesTheta = new Queue<float>[NumSearchThreads];
-
-                // Create random number queues and fill them up
-                for (int i = 0; i < NumSearchThreads; i++)
-                {
-                    randomQueuesXY[i] = new Queue<float>();
-                    randomQueuesTheta[i] = new Queue<float>();
-
-                    FillRandomQueues(i);
-                }
-            }*/
         }
+
+        /*
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="physicalMapSize">Physical map size in meters</param>
+        /// <param name="holeMapSize">Hole map size in pixels</param>
+        /// <param name="obstacleMapSize">Obstacle map size in pixels</param>
+        /// <param name="startPose">Start pose</param>
+        /// <param name="sigmaXY">Sigma XY in meters</param>
+        /// <param name="sigmaTheta">Sigma theta in radians</param>
+        /// <param name="iterationsPerThread">Search iterations per thread</param>
+        /// <param name="numSearchThreads">Number of search threads (1 or less for no threading)</param>
+        private SlamProcessor(float physicalMapSize, int holeMapSize, int obstacleMapSize, Vector3 startPose,
+            float sigmaXY, float sigmaTheta, int iterationsPerThread, int numSearchThreads)
+        {
+            // Set properties
+            PhysicalMapSize = physicalMapSize;
+            this.startPose = startPose;
+            SigmaXY = sigmaXY;
+            SigmaTheta = sigmaTheta;
+            SearchIterationsPerThread = iterationsPerThread;
+            NumSearchThreads = numSearchThreads;
+        */
+
 
         /// <summary>
         /// Reset everything
