@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Command\CommandListenerService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\ICommandHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\MotorCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\SetEncoderCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Navigation\SLAMCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AlarmMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\GamePadMessage.cs" />

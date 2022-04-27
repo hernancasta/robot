@@ -56,7 +56,7 @@ namespace RoboclawService
 
 
             if (commandResult)
-                Console.WriteLine("Executed Movement");
+                Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")} Executed Movement {Message.MovementType}|{Message.Position1}|{Message.Position2}|{Message.Motor1Speed}|{Message.Motor2Speed}");
             else
                 Console.WriteLine("Error receiving data");
 

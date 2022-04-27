@@ -6,7 +6,7 @@ namespace Shared.Command.Movement
 {
     internal class MotorCommand : Command
     {
-        internal MovementType MovementType { get; set; }
+        public MovementType MovementType { get; set; }
 
         // For Speed
         public int Motor1Speed { get; set; }

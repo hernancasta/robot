@@ -22,6 +22,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             .AddRedisMessaging()
             .AddSingleton<RoboclawService.Roboclaw.Roboclaw>()
             .AddHostedService<MotorCommandListener>() //listen messages of type MotorCommand.
+            .AddHostedService<EncoderCommandListener>() //listen messages of type SetEncoderCommand.
             .AddHostedService<Worker>()
         ;
     })

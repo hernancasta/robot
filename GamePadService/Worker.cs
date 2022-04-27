@@ -68,7 +68,6 @@ namespace GamePadService
 
         private async Task ProcessValuesAsync(byte[] message)
         {
-//            bool changed = false;
             if (message.IsButton())
             {
                 var oldValue = Buttons[message.GetAddress()].Pressed;
@@ -77,7 +76,6 @@ namespace GamePadService
                 if (oldValue != newValue)
                 {
                     Buttons[message.GetAddress()].Pressed = message.IsButtonPressed();
-//                    changed = true;
                 }
             }
             else if (message.IsAxis())
@@ -88,17 +86,14 @@ namespace GamePadService
                 if (oldValue != newValue)
                 {
                     Axis[message.GetAddress()].Value = message.GetAxisValue();
- //                   changed = true;
                 }
             }
 
-            //if (changed) { 
-                var redismessage = new GamePadMessage {
-                    Axes = Axis.Values,
-                    Buttons = Buttons.Values
-                };
-                await _streamPublisher.PublishAsync("gamepad", redismessage);
-            //}
+            var redismessage = new GamePadMessage {
+                Axes = Axis.Values,
+                Buttons = Buttons.Values
+            };
+            await _streamPublisher.PublishAsync("gamepad", redismessage);
 
         }
     }
