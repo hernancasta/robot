@@ -11,15 +11,15 @@ using Shared.Serialization;
 using Shared.Streaming;
 using Microsoft.Extensions.DependencyInjection;
 using ConsoleTestMapper;
+using SkiaSharp;
+using CartographerService;
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
-//MakeMap();
+MakeMap();
 
-await StartHost();
-
-
+//await StartHost();
 
 static async Task StartHost() {
 
@@ -52,7 +52,7 @@ static void MakeMap() {
     var serializer = new Shared.Serialization.SystemTextJsonSerializer();
     var obj = serializer.DeserializeBytes<CartographerService.Scans>(data);
 
-    Vector3 Pose = new Vector3(500, 500, 0); //X,Y, Orientation
+    Vector3 Pose = new Vector3(0, 0, 0); //X,Y, Orientation
 
     SkiaSharp.SKBitmap bitmap = new SkiaSharp.SKBitmap(1000, 1000);
 
@@ -63,11 +63,68 @@ static void MakeMap() {
     double ForwardAccum = 0;
     double TurnAccum = 0;
 
+    var counter = 1;
+
+    using (SKCanvas canvas = new SKCanvas(bitmap))
+    {
+        using (SKPaint paint = new SKPaint())
+        {
+            paint.Style = SKPaintStyle.Stroke;
+            paint.Color = SKColors.White;
+            paint.StrokeWidth = 2;
+            paint.StrokeCap = SKStrokeCap.Butt;
+            paint.TextSize = 30;
+
+            using (SKPaint paint1 = new SKPaint()) { 
+
+                paint1.Color = new SKColor(10,10,10);
+
+                using (SKPaint paint2 = new SKPaint())
+                {
+
+                    paint1.Color = new SKColor(20, 20, 20);
+
+                    for (int x = 0; x < 100; x++)
+                    {
+                        for (int y = 0; y < 100; y++)
+                        {
+                            var color = (x + y) % 2 == 0 ? paint1 : paint2;
+                            canvas.DrawRect(x * 100, y * 100, 100, 100, color);
+                        }
+                    }
+
+                    var reference = 1000; // 1m => a mm
+                    reference /= 10; //scale
+                    canvas.DrawLine(new SKPoint(10, 50), new SKPoint(10 + reference, 50), paint);
+
+                    canvas.DrawText("1m", new SKPoint(0, 45), paint);
+
+                    reference = 100; // 10cm => a mm
+                    reference /= 10; //scale
+                    canvas.DrawLine(new SKPoint(10, 100), new SKPoint(10 + reference, 100), paint);
+
+                    canvas.DrawText("10cm", new SKPoint(0, 95), paint);
+
+                   
+                }
+            }
+        }
+    }
+
     foreach (var item in obj.scans)
     {
+
+        DrawMeasures(bitmap, item, Pose);
+
         if (first)
         {
             first = false;
+            // drawing map.
+            bitmap.SetPixel(
+                (int)(Pose.X / 10 + bitmap.Width / 2),
+                bitmap.Height - (int)(Pose.Y / 10 + bitmap.Height / 2),
+                new SkiaSharp.SKColor(0, 255, 0)
+                );
         }
         else
         {
@@ -76,28 +133,70 @@ static void MakeMap() {
             var Forward = (W1 + W2) / 2;
             var Turn = (W1 - W2);
             ForwardAccum += Forward;
-            TurnAccum += Turn;
-            //        Console.WriteLine($"{ForwardAccum} {TurnAccum}");
 
-            var TurnRad = Turn;
-            var ForwardDist = Forward / 7200;
-
-            var Y = ForwardDist * Math.Cos(TurnRad);
-            var X = ForwardDist * Math.Sin(TurnRad);
-
+            // Distance between wheels = 0.724m
+            // D * PI = Distance for 1 turn.
+            var TurnRad =(Math.PI) * ((Turn * 930 / 7200) / (Math.PI * 724));
+            TurnAccum += TurnRad;
+            var ForwardDist = 930 * Forward / 7200;
+            var Y = ForwardDist * Math.Cos(TurnAccum);
+            var X = ForwardDist * Math.Sin(TurnAccum);
             Pose += new Vector3((float)X, (float)Y, (float)TurnRad);
+            Console.WriteLine($"X={Pose.X}\tY={Pose.Y}\tOrientation={ToGrad(Pose.Z)}\tForward={ForwardDist}");
 
-            Console.WriteLine($"{Pose.X} {Pose.Y} {Pose.Z}");
+            // drawing map.
+            bitmap.SetPixel(
+                (int)(Pose.X / 10 + bitmap.Width / 2) ,
+                bitmap.Height - (int)(Pose.Y / 10 + bitmap.Height / 2) , 
+                new SkiaSharp.SKColor(0, 255, 0)
+                );
+
+//            DrawMeasures(bitmap, item, Pose);
+
         }
         Last1 = item.Encoder1;
         Last2 = item.Encoder2;
 
-        //    Console.WriteLine($"{item.Encoder1} {item.Encoder2} {item.Measurements.Count}");
-        foreach (var Measure in item.Measurements)
+        // 1.1327 coef para pegarle a la distancia 
+        // 7200 una vuelta = 0.93mts
+
+       
+    }
+    using (MemoryStream memStream = new MemoryStream())
+    using (SKManagedWStream wstream = new SKManagedWStream(memStream))
+    {
+        bitmap.Encode(wstream, SKEncodedImageFormat.Png, 100);
+        byte[] data1 = memStream.ToArray();
+
+        using (FileStream fs = new FileStream(@$"map{counter.ToString("0000")}.png", FileMode.Create))
         {
 
+            fs.Write(data1);//, folder, filename);
         }
     }
+    counter++;
+}
 
+static float ToGrad(float value)
+{
+    return (float)((value * 180 / Math.PI) % 360);
+}
 
+static void DrawMeasures(SkiaSharp.SKBitmap bitmap, Scan item, Vector3 Pose)
+{
+    var Bounds = ((bitmap.Width - 2) / 2) * 10;
+    foreach (var Measure in item.Measurements)
+    {
+        var px = 1000 * Measure.Distance * Math.Sin(Measure.Angle * Math.PI / 180 + Pose.Z) + Pose.X + 210 * Math.Sin(Pose.Z);
+        var py = 1000 * Measure.Distance * Math.Cos(Measure.Angle * Math.PI / 180 + Pose.Z) + Pose.Y + 210 * Math.Cos(Pose.Z);
+
+        if (Math.Abs(px) < Bounds && Math.Abs(py) < Bounds)
+        {
+            bitmap.SetPixel(
+               (int)(px / 10 + bitmap.Width / 2),
+               bitmap.Height - (int)(py / 10 + bitmap.Height / 2),
+               new SkiaSharp.SKColor(255, 0, 0)
+               );
+        }
+    }
 }
