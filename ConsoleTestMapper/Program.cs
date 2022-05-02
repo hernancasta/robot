@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ConsoleTestMapper;
 using SkiaSharp;
 using CartographerService;
+using MappingService.SLAM;
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
@@ -95,13 +96,13 @@ static void MakeMap() {
 
                     var reference = 1000; // 1m => a mm
                     reference /= 10; //scale
-                    canvas.DrawLine(new SKPoint(10, 50), new SKPoint(10 + reference, 50), paint);
+                    canvas.DrawLine(new SKPoint(0, 50), new SKPoint(0 + reference, 50), paint);
 
                     canvas.DrawText("1m", new SKPoint(0, 45), paint);
 
                     reference = 100; // 10cm => a mm
                     reference /= 10; //scale
-                    canvas.DrawLine(new SKPoint(10, 100), new SKPoint(10 + reference, 100), paint);
+                    canvas.DrawLine(new SKPoint(0, 100), new SKPoint(0 + reference, 100), paint);
 
                     canvas.DrawText("10cm", new SKPoint(0, 95), paint);
 
@@ -111,10 +112,14 @@ static void MakeMap() {
         }
     }
 
+    SlamProcessor slam = new SlamProcessor(20f, 1024, 1024, .4f, 2, 1000, 0.5f);
+
     foreach (var item in obj.scans)
     {
 
         DrawMeasures(bitmap, item, Pose);
+
+        double ForwardDist = 0;
 
         if (first)
         {
@@ -138,11 +143,10 @@ static void MakeMap() {
             // D * PI = Distance for 1 turn.
             var TurnRad =(Math.PI) * ((Turn * 930 / 7200) / (Math.PI * 724));
             TurnAccum += TurnRad;
-            var ForwardDist = 930 * Forward / 7200;
+            ForwardDist = 930 * Forward / 7200;
             var Y = ForwardDist * Math.Cos(TurnAccum);
             var X = ForwardDist * Math.Sin(TurnAccum);
             Pose += new Vector3((float)X, (float)Y, (float)TurnRad);
-            Console.WriteLine($"X={Pose.X}\tY={Pose.Y}\tOrientation={ToGrad(Pose.Z)}\tForward={ForwardDist}");
 
             // drawing map.
             bitmap.SetPixel(
@@ -160,7 +164,16 @@ static void MakeMap() {
         // 1.1327 coef para pegarle a la distancia 
         // 7200 una vuelta = 0.93mts
 
-       
+        ScanSegment scansegment = new ScanSegment() {
+            Pose = Pose,
+            Rays = item.Measurements
+        };
+        slam.Update(new ScanSegment[] { scansegment });
+
+        Console.WriteLine($"X={Pose.X}\tY={Pose.Y}\tOrientation={ToGrad(Pose.Z)}\tForward={ForwardDist} " +
+            $"XPose={slam.Pose.X}\tYPose={slam.Pose.Y}\tOrientation={ToGrad(slam.Pose.Z)}");
+
+
     }
     using (MemoryStream memStream = new MemoryStream())
     using (SKManagedWStream wstream = new SKManagedWStream(memStream))
