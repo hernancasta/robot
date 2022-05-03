@@ -1,5 +1,6 @@
 ﻿using Shared.Data;
 using Shared.Streaming;
+using SkiaSharp;
 using System.Collections.Concurrent;
 
 namespace RobotHMI.Data
@@ -8,6 +9,8 @@ namespace RobotHMI.Data
     {
         private readonly ILogger<RobotClientService> _logger;
         private readonly IStreamSubscriber _streamSubscriber;
+
+//        private SkiaSharp.SKBitmap _skBitmap;
 
         public event Action OnChange;
         public event Action OnTagChange;
@@ -21,7 +24,6 @@ namespace RobotHMI.Data
 
         public LidarMessage? LidarScan { get; protected set; }
 
-
         public RobotClientService(ILogger<RobotClientService> logger, IStreamSubscriber streamSubscriber)
         {
             _logger = logger;
@@ -32,6 +34,11 @@ namespace RobotHMI.Data
         {
             return Alarms.Where(x => x.Value.Active).Count();
         }
+
+        private SKColor unknown = new SKColor(0, 0, 0);
+        private SKColor empty = new SKColor(80, 80, 80);
+        private SKColor occupied = new SKColor(255, 0, 0);
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -71,8 +78,52 @@ namespace RobotHMI.Data
                 Signals.AddOrUpdate(tag.TagName, tag, (key, value) => { return tag; });
                 NotifyTagsChanged();
             });
-            
-        }
+
+            await _streamSubscriber.SubscribeAsync<TagGroupMessage>("TAGGROUP.*", (tag) =>
+            {
+                foreach (var t in tag.Tags)
+                {
+                    Signals.AddOrUpdate(t.TagName, t, (key, value) => { return t; });
+                }
+            });
+
+                /*
+                await _streamSubscriber.SubscribeAsync<MapMessage>(("MAP"), (map) => {
+
+                    if (_skBitmap == null)
+                    {
+                        _skBitmap = new SkiaSharp.SKBitmap(map.Size, map.Size);
+                    }
+
+                    for (int i = 0; i < map.Data.Length; i++)
+                    {
+                        var color = unknown;
+                        if (map.Data[i] == 1)
+                        {
+                            color = empty;
+                        }
+                        if (map.Data[i] > 1) { color = occupied; }
+                            var x = i % map.Size;
+                            var y = i / map.Size;
+                        _skBitmap.SetPixel(x ,y, color);
+                    }
+
+                    using (MemoryStream memStream = new MemoryStream())
+                    using (SKManagedWStream wstream = new SKManagedWStream(memStream))
+                    {
+                        _skBitmap.Encode(wstream, SKEncodedImageFormat.Png, 100);
+                        byte[] data = memStream.ToArray();
+
+                        using (FileStream fs = new FileStream(@"C:\Hernan\Source\Robot2022\Robot2022\RobotHMI\bin\Debug\net6.0\hernan.png", FileMode.Create)) {
+
+                            fs.Write(data);//, folder, filename);
+                        }
+
+                    }
+
+                });
+                */
+            }
 
 
         internal string RobotStatus() { 
