@@ -131,6 +131,32 @@ namespace MappingService.SLAM
             Reset();
         }
 
+        public SlamProcessor(float physicalMapSize, Int32 holeMapSize, Int32 obstacleMapSize
+            , float sigmaXY, float sigmaTheta, Int32 iterations, float holeWidth)
+        {
+
+            PhysicalMapSize = physicalMapSize;
+            this.startPose = new Vector3(physicalMapSize / 2, physicalMapSize / 2, 0);
+            SigmaXY = sigmaXY;
+            SigmaTheta = sigmaTheta.DegToRad();
+            SearchIterationsPerThread = iterations;
+            //NumSearchThreads = numSearchThreads;
+
+            HoleWidth = holeWidth;
+
+            // Create maps
+            HoleMap = new HoleMap(holeMapSize, physicalMapSize);
+            ObstacleMap = new ObstacleMap(obstacleMapSize, physicalMapSize);
+            noHitMap = new bool[obstacleMapSize, obstacleMapSize];
+
+            // Use 3rd party library for fast normal distribution random number generator
+            samplerXY = new ZigguratGaussianSampler(0.0f, sigmaXY);
+            samplerTheta = new ZigguratGaussianSampler(0.0f, sigmaTheta);
+
+            // Reset everything
+            Reset();
+        }
+
         /*
         /// <summary>
         /// Constructor
@@ -270,7 +296,8 @@ namespace MappingService.SLAM
         /// <param name="iterations">Number of search iterations</param>
         /// <param name="distance">Best pose distance value (the lower the better)</param>
         /// <returns>Best found pose</returns>
-        private Vector3 MonteCarloSearch(ScanCloud cloud, Vector3 searchPose, Func<float> randomXY, Func<float> randomTheta, int iterations, out int distance)
+        private Vector3 MonteCarloSearch(ScanCloud cloud, Vector3 searchPose, Func<float> randomXY, Func<float> randomTheta, 
+            int iterations, out int distance)
         {
             Vector3 bestPose = searchPose;
             int currentDistance = CalculateDistance(cloud, searchPose);
