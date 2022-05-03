@@ -21,10 +21,10 @@ namespace Tester
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _streamSubscriber.SubscribeAsync<GamePadMessage>("gamepad", (data) =>
-            {
-                _logger.LogInformation($"{DateTime.Now} Receiving gamepad: {data.Axes.Count()} axis, {data.Buttons.Count()} buttons");
-            });
+            //await _streamSubscriber.SubscribeAsync<GamePadMessage>("gamepad", (data) =>
+            //{
+            //    _logger.LogInformation($"{DateTime.Now} Receiving gamepad: {data.Axes.Count()} axis, {data.Buttons.Count()} buttons");
+            //});
 
             //await _streamSubscriber.SubscribeAsync<string>("__keyspace@0__:*", (data) =>
             //{
@@ -34,12 +34,12 @@ namespace Tester
             //await _streamSubscriber.SubscribeAsync<AlarmMessage>("ALARM.*", (data) => {
             //    _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.Name} {data.Active}");
             //});
-            
-            await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.*", (data) =>
-            {
-                _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.TagName} {data.TagValue}");
-            });
-            
+
+            //await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.*", (data) =>
+            //{
+            //    _logger.LogInformation($"{DateTime.Now} Receiving alarm: {data.TagName} {data.TagValue}");
+            //});
+
             //await _streamSubscriber.SubscribeAsync<ObjectDetectionFrameMessage>("object_detection", (data) =>
             //{
             //    _logger.LogInformation($"{DateTime.Now} Receiving frame: {data.Detections.Count()}");
@@ -49,7 +49,7 @@ namespace Tester
             //    }
             //});
 
-
+            /*
             int i = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -58,7 +58,12 @@ namespace Tester
                     Acceleration=1000, Motor1Speed=1000, Motor2Speed=1000 });
                 i++;
                 await Task.Delay(20000);
-            }
+            }*/
+
+            await _streamSubscriber.SubscribeAsync<PoseMessage>("SLAM.*", (data) => {
+                _logger.LogInformation($"{data.X} {data.Y} {data.Orientation}");
+            });
+
         }
     }
 }

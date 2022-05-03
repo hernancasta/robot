@@ -8,19 +8,7 @@
 
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#tab-1">Lidar</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#tab-2">Motors</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#tab-3">Encoder</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#tab-4">Gamepad</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#tab-5">Logging</a>
+            <a class="nav-link active" data-toggle="tab" href="#tab-1">Motors</a>
         </li>
     </ul>
     <div class="tab-content mb-3">
@@ -29,11 +17,9 @@
                 <form>
                     <div class="container-fluid table">
                         <PresetHeader></PresetHeader>
-                        @foreach (var preset in RobotCLI.Presets.Where(x => x.Value.Category == "ManualControlService").Select(x => x.Value).ToArray())
+                        @foreach (var preset in RobotCLI.Presets.Values.Where(x => x.Topic == "ManualControlService").OrderBy(x => x.Name)) 
                         {
-@*                            <PresetRow Preset="@preset"></PresetRow>
-*@                        
-                        <label>@preset.Name</label>
+                            <PresetRow Preset="@preset"></PresetRow>
                         }
                     </div>
                 </form>
@@ -51,20 +37,35 @@
 </div>
 
 @code {
-        // inject jsruntime to call javascript code
+    // inject jsruntime to call javascript code
     [Inject] public IJSRuntime JSRuntime { get; set; }
 
     // hold the callback selected value
     public string SelectedValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        RobotCLI.OnPresetChange += ApplyChanges;
+    }
+
+    public void Dispose()
+    {
+        RobotCLI.OnPresetChange -= ApplyChanges;
+    }
+
 
     // call the javascript method to init the select picker
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) // only needs to be called once per page render
         {
+
             await JSRuntime.InvokeVoidAsync("InitSelectPicker", DotNetObjectReference.Create(this), "OnSelectedValue", ".selectpicker");
+
         }
     }
+
+//    public Preset[] Presets { get; set; }
 
     // method which will be triggered by javascript, need to pass the method name
     [JSInvokable]
@@ -75,14 +76,15 @@
     }
 
 
-    void save()
+    async Task save()
     {
-//        RobotCLI.Save();
+        await RobotCLI.SavePresets();
+        ApplyChanges();
     }
 
     void cancel()
     {
-//        RobotCLI.CancelPresets();
+       RobotCLI.CancelPresets();
     }
 
     private void ApplyChanges()

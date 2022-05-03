@@ -18,7 +18,8 @@ IHost host = Host.CreateDefaultBuilder(args)
                 .AddSerialization()
                 .AddMessaging()
                 .AddRedisMessaging()
-//                .AddHostedService<PresetCommandListener>()
+                .AddSingleton<PresetCommandListener>()
+                .AddHostedService(serviceCollection => serviceCollection.GetRequiredService<PresetCommandListener>())
                 .AddSingleton<ICommandHandler<MotorCommand>, CommandHandler<MotorCommand>>() //Service to send commands to motor drive.
                 .AddSingleton<ICommandHandler<PresetCommand>, CommandHandler<PresetCommand>>() //Service to send commands to motor drive.
                 .AddHostedService<Worker>()

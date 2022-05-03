@@ -20,7 +20,7 @@ namespace Shared.Command
 
         public async Task HandleAsync(T command) {
             await _messagePublisher.PublishAsync<T>(command.TopicName, command);
-            Console.WriteLine("Sending message "+command.TopicName);
+           // Console.WriteLine("Sending message "+command.TopicName);
         }
 
     }

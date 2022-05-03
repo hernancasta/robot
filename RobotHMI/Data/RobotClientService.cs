@@ -1,36 +1,44 @@
-﻿using Shared.Command.Preset;
+﻿using Shared.Command;
+using Shared.Command.Preset;
 using Shared.Data;
 using Shared.Streaming;
 using SkiaSharp;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace RobotHMI.Data
 {
-    public class RobotClientService : BackgroundService
+    internal class RobotClientService : BackgroundService
     {
         private readonly ILogger<RobotClientService> _logger;
         private readonly IStreamSubscriber _streamSubscriber;
+        private readonly ICommandHandler<PresetCommand> _preset;
 
 //        private SkiaSharp.SKBitmap _skBitmap;
 
         public event Action OnChange;
         public event Action OnTagChange;
         public event Action OnAlarmChange;
+        public event Action OnPresetChange;
         private void NotifyStateChanged() => OnChange?.Invoke();
         private void NotifyTagsChanged() => OnTagChange?.Invoke();
         private void NotifyAlarmsChanged() => OnAlarmChange?.Invoke();
+
+        private void NotifyPresetsChanged() => OnPresetChange?.Invoke();
+
 
         private ConcurrentDictionary<string,TagMessage> Signals = new ConcurrentDictionary<string,TagMessage>();
         internal ConcurrentDictionary<string, Alarm> Alarms = new ConcurrentDictionary<string, Alarm>();
 
         public LidarMessage? LidarScan { get; protected set; }
 
-        public ConcurrentDictionary<string, PresetMessage> Presets { get; protected set; } = new ConcurrentDictionary<string, PresetMessage>();
+        public ConcurrentDictionary<string, Preset> Presets { get; protected set; } = new ConcurrentDictionary<string, Preset>();
 
-        public RobotClientService(ILogger<RobotClientService> logger, IStreamSubscriber streamSubscriber)
+        public RobotClientService(ILogger<RobotClientService> logger, IStreamSubscriber streamSubscriber, ICommandHandler<PresetCommand> preset)
         {
             _logger = logger;
             _streamSubscriber = streamSubscriber;
+            _preset = preset;
         }
 
         internal int AlarmsCount()
@@ -83,11 +91,28 @@ namespace RobotHMI.Data
                 {
                     Signals.AddOrUpdate(t.TagName, t, (key, value) => { return t; });
                 }
+                NotifyTagsChanged();
             });
 
             await _streamSubscriber.SubscribeAsync<PresetMessage>("Preset.*", (preset) =>
             {
-                Presets.AddOrUpdate(preset.Name, preset, (key, value) => { return preset; });                
+                bool updated = false;
+                Presets.AddOrUpdate(preset.Name, 
+                    new Preset { Name = preset.Name, DataType = preset.DataType, 
+                        SetpointValue =  ((JsonElement)preset.SetValue).GetNativeDataType(preset.DataType),
+                        CurrentValue = ((JsonElement)preset.CurrentValue).GetNativeDataType(preset.DataType),
+                        Topic = preset.Category, Uom = preset.Uom}
+                    , (key, value) => {
+                        var n = ((JsonElement)preset.CurrentValue).GetNativeDataType(preset.DataType);
+                        if (!(value.CurrentValue.Equals(n)))
+                        {
+                            updated = true;
+                            value.CurrentValue = n;
+                        }
+                        return value; 
+                });
+                if (updated)
+                    NotifyPresetsChanged();
             });
 
                 /*
@@ -187,6 +212,26 @@ namespace RobotHMI.Data
         internal bool HasTag(string tagname)
         {
             return Signals.ContainsKey(tagname);
+        }
+
+        internal async Task SavePresets()
+        {
+            foreach (var preset in Presets.Values.ToArray())
+            {
+                if (!preset.SetpointValue.Equals(preset.CurrentValue))
+                {
+                    await _preset.HandleAsync(new PresetCommand { Name = preset.Name, Topic = preset.Topic
+                        , SetValue = preset.SetpointValue });
+                }
+            }
+        }
+
+        internal async Task CancelPresets()
+        {
+            foreach (var preset in Presets.Values.ToArray())
+            {
+                preset.Reset();
+            }
         }
     }
 }

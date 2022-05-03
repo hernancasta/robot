@@ -22,7 +22,7 @@ namespace Shared.Command
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine($"Subscribing to topic {TOPIC}");
+           // Console.WriteLine($"Subscribing to topic {TOPIC}");
             _messageSubscriber.SubscribeAsync<T>(TOPIC, message => {
                 ExecuteCommand(message);
             });

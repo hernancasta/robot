@@ -12,12 +12,12 @@ namespace ManualControlService
         private readonly ICommandHandler<MotorCommand> _motor;
         private readonly IStreamSubscriber _streamSubscriber;
         private readonly IConfiguration _configuration;
-        //private readonly PresetCommandListener _presetListener;
+        private readonly PresetCommandListener _presetListener;
         private readonly ICommandHandler<PresetCommand> _preset;
 
         public Worker(ILogger<Worker> logger, IStreamSubscriber streamSubscriber,
             ICommandHandler<MotorCommand> commandHandler, IConfiguration configuration, 
-//            PresetCommandListener presetListener,
+            PresetCommandListener presetListener,
             ICommandHandler<PresetCommand> preset
             )
         {
@@ -26,7 +26,7 @@ namespace ManualControlService
             _streamSubscriber = streamSubscriber;
             _configuration = configuration;
             _preset = preset;
-//            _presetListener = presetListener;
+            _presetListener = presetListener;
         }
 
 
@@ -40,21 +40,22 @@ namespace ManualControlService
         bool lastButtonAPressed = false;
 
         bool _blockLidar = false;
-        int _speed = 0;
-        uint _accel = 0, _deceleration=0;
+//        int _speed = 0;
+        //uint _accel = 0, _deceleration=0;
         short _zeroThreshold;
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
             _blockLidar = _configuration.GetValue<bool>("ManualControlService:BlockByLidar");
-            _speed = _configuration.GetValue<int>("ManualControlService:Speed");
             _zeroThreshold = _configuration.GetValue<short>("ManualControlService:ZeroThreshold");
 
-            _accel = _configuration.GetValue<uint>("ManualControlService:Acceleration");
-            _deceleration = _configuration.GetValue<uint>("ManualControlService:Deceleration");
+            var Acceleration = _configuration.GetValue<uint>("ManualControlService:Acceleration");
+            var Deceleration = _configuration.GetValue<uint>("ManualControlService:Deceleration");
+            var Speed = _configuration.GetValue<uint>("ManualControlService:Speed");
 
-//            await _preset.HandleAsync(new PresetCommand { Name = "Acceleration", Topic = "ManualControlService", Value = (uint)Acceleration });
-//            await _preset.HandleAsync(new PresetCommand { Name = "Deceleration", Topic = "ManualControlService", Value = (uint)Deceleration });
+            await _preset.HandleAsync(new PresetCommand { Name = "Acceleration", Topic = "ManualControlService", SetValue = (uint)Acceleration });
+            await _preset.HandleAsync(new PresetCommand { Name = "Deceleration", Topic = "ManualControlService", SetValue = (uint)Deceleration });
+            await _preset.HandleAsync(new PresetCommand { Name = "Speed", Topic = "ManualControlService", SetValue = (uint)Speed });
 
             await _streamSubscriber.SubscribeAsync<GamePadMessage>("gamepad", async (data) =>
             {
@@ -106,9 +107,9 @@ namespace ManualControlService
                     await _motor.HandleAsync(new MotorCommand()
                     {
                         MovementType = MovementType.Speed,
-                        Acceleration = _accel,
-                        Motor1Speed = (int)(_speed * motor1),
-                        Motor2Speed = (int)(_speed * motor2)
+                        Acceleration = _presetListener.Acceleration,
+                        Motor1Speed = (int)(_presetListener.Speed * motor1),
+                        Motor2Speed = (int)(_presetListener.Speed * motor2)
                     });
                     lastMovedFlag = true;
                 } else
@@ -116,7 +117,7 @@ namespace ManualControlService
                     await _motor.HandleAsync(new MotorCommand()
                     {
                         MovementType = MovementType.Speed,
-                        Acceleration = _deceleration,
+                        Acceleration = _presetListener.Deceleration,
                         Motor1Speed = 0,
                         Motor2Speed = 0
                     });
