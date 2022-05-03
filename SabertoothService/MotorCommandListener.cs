@@ -12,7 +12,8 @@ namespace SabertoothService
     internal sealed class MotorCommandListener : CommandListenerService<MotorCommand>
     {
 
-        public MotorCommandListener(IMessageSubscriber messageSubscriber):base(messageSubscriber)
+        public MotorCommandListener(IMessageSubscriber messageSubscriber):
+            base(messageSubscriber, "MotorCommand")
         {
         }
 

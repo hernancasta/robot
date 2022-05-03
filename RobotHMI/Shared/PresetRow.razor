@@ -1,0 +1,158 @@
+﻿@using RobotHMI.Data
+@using global::Shared.Data
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-6 col-md-12 table-cell">
+                <p>@Preset.Name</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="row">
+            <div class="col-6 col-md-12 table-cell">
+                <p>@Preset.Uom</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="row">
+            <div class="col-6 col-md-12 table-cell">
+                @switch (Preset.GetType().ToString())
+                {
+                    case "RobotHMI.Data.RobotPreset`1[System.Single]":
+                        <input class="form-control" type="number" value="@Preset.CurrentValue" step="0.01" onClick="this.select();" @onchange="chng">
+                        break;
+                    case "RobotHMI.Data.RobotPresetSerialPort":
+                        @*<div class="form-group">*@
+                            <select class="form-control selectpicker" data-style="btn-highlight"  @bind="SelectableString">
+                                <option >/dev/ttyACM0</option>
+                                <option >/dev/ttyAMA0</option>
+                                <option >/dev/ttyUSB0</option>
+                                <option >/dev/ttyS0</option>
+                            </select>
+                        @*</div>*@
+                        break;
+                    case "RobotHMI.Data.RobotPreset`1[System.Int32]":
+                    case "RobotHMI.Data.RobotPreset`1[System.UInt16]":
+                        <input class="form-control" type="number" value="@Preset.CurrentValue" step="1" onClick="this.select();" @onchange="chng">
+                        break;
+                    case "RobotHMI.Data.RobotPreset`1[System.Double]":
+                        <input class="form-control" type="number" value="@Preset.CurrentValue" step="0.01" onClick="this.select();" @onchange="chng">
+                        break;
+                    case "RobotHMI.Data.RobotPreset`1[System.Boolean]":
+                        @*<div class="form-group">*@
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" value="" id="chk@(Preset.Name)"
+                                       @bind="@Preset.CurrentValue"
+                                      >
+                                <label class="form-check-label" for="chk@(Preset.Name)"><i class="fa fa-check"></i></label>
+                            </div>
+                        @*</div>*@
+                        break;
+                    default:
+                        <span class="text-danger">@Preset.GetType().ToString() not supported</span>
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+    @*data-toggle="tooltip" data-placement="bottom"*@
+
+    <div class="col-md-1">
+        <div class="row">
+            <div class="col-6 col-md-12 table-cell">
+                <div class="@(Preset.CurrentValue!=Preset.SetValue?"":"collapse")"
+                     data-container="body" data-toggle="popover" data-placement="top"
+                     data-content="@Preset.SetValue"
+                     title="Setpoint modified">
+                    <i class="fa fa-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            @code {
+
+                [Parameter]
+                public PresetMessage Preset { get; set; }
+
+                private string _selectablestring;
+                public string SelectableString {
+                    get { return _selectablestring; }
+                    set {
+                        _selectablestring = value;
+                        //Preset.Value = value;
+                        //TODO Send Command
+                    }
+                }
+
+                //private bool _presetbool;
+                //public bool presetbool
+                //{
+                //    get { return _presetbool; }
+                //    set
+                //    {
+                //        _presetbool = value;
+                //        ((RobotHMI.Data.RobotPreset<bool>)Preset).Value = value;
+                //    }
+                //}
+
+                void chng(ChangeEventArgs ev)
+                {
+                    /*
+                    switch (Preset.GetType().ToString())
+                    {
+                        case "RobotHMI.Data.RobotPreset`1[System.Single]":
+                            ((RobotHMI.Data.RobotPreset<Single>)Preset).Value = Single.Parse(ev.Value.ToString());
+                            break;
+                        case "RobotHMI.Data.RobotPresetSerialPort":
+                            ((RobotHMI.Data.RobotPresetSerialPort)Preset).Value = ev.Value.ToString();
+                            break;
+                        case "RobotHMI.Data.RobotPreset`1[System.Int32]":
+                            ((RobotHMI.Data.RobotPreset<Int32>)Preset).Value = Int32.Parse(ev.Value.ToString());
+                            break;
+                        case "RobotHMI.Data.RobotPreset`1[System.UInt16]":
+                            ((RobotHMI.Data.RobotPreset<Int32>)Preset).Value = UInt16.Parse(ev.Value.ToString());
+                            break;
+                        case "RobotHMI.Data.RobotPreset`1[System.Double]":
+                            ((RobotHMI.Data.RobotPreset<Double>)Preset).Value = Double.Parse(ev.Value.ToString());
+                            break;
+                        case "RobotHMI.Data.RobotPreset`1[System.Boolean]":
+                            ((RobotHMI.Data.RobotPreset<Boolean>)Preset).Value = bool.Parse(ev.Value.ToString());
+                            break;
+                    }
+                    */
+                    StateHasChanged();
+                }
+
+                protected override void OnInitialized()
+                {
+                    /*
+                    if (Preset is RobotHMI.Data.RobotPresetSerialPort)
+                    {
+                        SelectableString = ((RobotHMI.Data.RobotPresetSerialPort)Preset).OriginalValue;
+                    }*/
+                    base.OnInitialized();
+                }
+
+                protected override void OnAfterRender(bool firstRender)
+                {
+                    if (firstRender)
+                    {/*
+                        if (Preset is RobotHMI.Data.RobotPresetSerialPort)
+                        {
+                            SelectableString = ((RobotHMI.Data.RobotPresetSerialPort)Preset).OriginalValue;
+                            StateHasChanged();
+                        }
+                        if (Preset is RobotHMI.Data.RobotPreset<bool>)
+                        {
+                            presetbool = ((RobotHMI.Data.RobotPreset<bool>)Preset).Value;
+                            StateHasChanged();
+                        }*/
+                    }
+                    base.OnAfterRender(firstRender);
+                }
+            }

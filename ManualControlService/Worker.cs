@@ -1,5 +1,6 @@
 using Shared.Command;
 using Shared.Command.Movement;
+using Shared.Command.Preset;
 using Shared.Data;
 using Shared.Streaming;
 
@@ -11,14 +12,21 @@ namespace ManualControlService
         private readonly ICommandHandler<MotorCommand> _motor;
         private readonly IStreamSubscriber _streamSubscriber;
         private readonly IConfiguration _configuration;
+        //private readonly PresetCommandListener _presetListener;
+        private readonly ICommandHandler<PresetCommand> _preset;
 
         public Worker(ILogger<Worker> logger, IStreamSubscriber streamSubscriber,
-            ICommandHandler<MotorCommand> commandHandler, IConfiguration configuration)
+            ICommandHandler<MotorCommand> commandHandler, IConfiguration configuration, 
+//            PresetCommandListener presetListener,
+            ICommandHandler<PresetCommand> preset
+            )
         {
             _logger = logger;
             _motor = commandHandler;
             _streamSubscriber = streamSubscriber;
             _configuration = configuration;
+            _preset = preset;
+//            _presetListener = presetListener;
         }
 
 
@@ -33,15 +41,20 @@ namespace ManualControlService
 
         bool _blockLidar = false;
         int _speed = 0;
-        uint _accel = 0;
+        uint _accel = 0, _deceleration=0;
         short _zeroThreshold;
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
 
             _blockLidar = _configuration.GetValue<bool>("ManualControlService:BlockByLidar");
             _speed = _configuration.GetValue<int>("ManualControlService:Speed");
-            _accel = _configuration.GetValue<uint>("ManualControlService:Acceleration");
             _zeroThreshold = _configuration.GetValue<short>("ManualControlService:ZeroThreshold");
+
+            _accel = _configuration.GetValue<uint>("ManualControlService:Acceleration");
+            _deceleration = _configuration.GetValue<uint>("ManualControlService:Deceleration");
+
+//            await _preset.HandleAsync(new PresetCommand { Name = "Acceleration", Topic = "ManualControlService", Value = (uint)Acceleration });
+//            await _preset.HandleAsync(new PresetCommand { Name = "Deceleration", Topic = "ManualControlService", Value = (uint)Deceleration });
 
             await _streamSubscriber.SubscribeAsync<GamePadMessage>("gamepad", async (data) =>
             {
@@ -103,7 +116,7 @@ namespace ManualControlService
                     await _motor.HandleAsync(new MotorCommand()
                     {
                         MovementType = MovementType.Speed,
-                        Acceleration = 1000,
+                        Acceleration = _deceleration,
                         Motor1Speed = 0,
                         Motor2Speed = 0
                     });

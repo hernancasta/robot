@@ -8,6 +8,8 @@ namespace Shared.Command.Movement
     {
         public MovementType MovementType { get; set; }
 
+
+
         // For Speed
         public int Motor1Speed { get; set; }
 
@@ -18,6 +20,8 @@ namespace Shared.Command.Movement
         // For Position
         public uint Position1 { get; set; }
         public uint Position2 { get; set; }
+
+        public override string TopicName => "MotorCommand";
     }
 
     internal enum MovementType

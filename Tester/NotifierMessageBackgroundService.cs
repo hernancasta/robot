@@ -12,7 +12,7 @@ namespace Tester
     {
 
 
-        public NotifierMessageBackgroundService(IMessageSubscriber messageSubscriber) : base(messageSubscriber)
+        public NotifierMessageBackgroundService(IMessageSubscriber messageSubscriber) : base(messageSubscriber, "MotorCommand")
         {
 
         }

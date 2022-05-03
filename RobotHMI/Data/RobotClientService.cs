@@ -1,4 +1,5 @@
-﻿using Shared.Data;
+﻿using Shared.Command.Preset;
+using Shared.Data;
 using Shared.Streaming;
 using SkiaSharp;
 using System.Collections.Concurrent;
@@ -23,6 +24,8 @@ namespace RobotHMI.Data
         internal ConcurrentDictionary<string, Alarm> Alarms = new ConcurrentDictionary<string, Alarm>();
 
         public LidarMessage? LidarScan { get; protected set; }
+
+        public ConcurrentDictionary<string, PresetMessage> Presets { get; protected set; } = new ConcurrentDictionary<string, PresetMessage>();
 
         public RobotClientService(ILogger<RobotClientService> logger, IStreamSubscriber streamSubscriber)
         {
@@ -70,11 +73,6 @@ namespace RobotHMI.Data
             });
 
             await _streamSubscriber.SubscribeAsync<TagMessage>("TAG.*", (tag) => {
-                //if (!Signals.ContainsKey(tag.TagName))
-                //{
-                //    Signals.Add(tag.TagName, tag);
-                //}
-                //Signals[tag.TagName] = tag;
                 Signals.AddOrUpdate(tag.TagName, tag, (key, value) => { return tag; });
                 NotifyTagsChanged();
             });
@@ -85,6 +83,11 @@ namespace RobotHMI.Data
                 {
                     Signals.AddOrUpdate(t.TagName, t, (key, value) => { return t; });
                 }
+            });
+
+            await _streamSubscriber.SubscribeAsync<PresetMessage>("Preset.*", (preset) =>
+            {
+                Presets.AddOrUpdate(preset.Name, preset, (key, value) => { return preset; });                
             });
 
                 /*

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap2.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="RobotHMI.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/bootstrap-select1.13.14/bootstrap-select.min.css" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -29,7 +30,26 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script src="css/jquery.min.js"></script>
+    <script src="~/css/popper1.16.0/popper.min.js"></script>
     <script src="~/css/bootstrap4.5.0/bootstrap.min.js"></script>
+    <script src="~/css/bootstrap-select1.13.14/bootstrap-select.min.js"></script>
+    <script>
+        //window.FontAwesomeConfig.keepOriginalSource = false;
+        window.InitSelectPicker = (dotnetHelper, callbackMethodName, pickerElementName) => {
+
+            // initialize the specified picker element
+            $(pickerElementName).selectpicker();
+            $('[data-toggle="popover"]').popover();
+            $('.toast').toast();
+
+            // setup event to push the selected dropdown value back to c# code
+            $(pickerElementName).on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                dotnetHelper.invokeMethodAsync(callbackMethodName, $(pickerElementName).val());
+            });
+
+        }
+       
+    </script>
 
 </body>
 </html>

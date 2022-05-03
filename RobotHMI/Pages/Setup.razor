@@ -1,0 +1,94 @@
+﻿@page "/Setup"
+@using RobotHMI.Data
+@using global::Shared.Data
+@inject RobotClientService RobotCLI
+
+<div class="container-fullwidth">
+
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#tab-1">Lidar</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#tab-2">Motors</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#tab-3">Encoder</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#tab-4">Gamepad</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#tab-5">Logging</a>
+        </li>
+    </ul>
+    <div class="tab-content mb-3">
+        <div class="tab-pane active" id="tab-1">
+            <div class="container-fullwidth">
+                <form>
+                    <div class="container-fluid table">
+                        <PresetHeader></PresetHeader>
+                        @foreach (var preset in RobotCLI.Presets.Where(x => x.Value.Category == "ManualControlService").Select(x => x.Value).ToArray())
+                        {
+@*                            <PresetRow Preset="@preset"></PresetRow>
+*@                        
+                        <label>@preset.Name</label>
+                        }
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<div class="container">
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary " @onclick="save">Save</button>
+        <button type="button" class="btn btn-secondary " @onclick="cancel">Cancel</button>
+    </div>
+</div>
+
+@code {
+        // inject jsruntime to call javascript code
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+
+    // hold the callback selected value
+    public string SelectedValue { get; set; }
+
+    // call the javascript method to init the select picker
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) // only needs to be called once per page render
+        {
+            await JSRuntime.InvokeVoidAsync("InitSelectPicker", DotNetObjectReference.Create(this), "OnSelectedValue", ".selectpicker");
+        }
+    }
+
+    // method which will be triggered by javascript, need to pass the method name
+    [JSInvokable]
+    public void OnSelectedValue(string val)
+    {
+        SelectedValue = val;
+        StateHasChanged();
+    }
+
+
+    void save()
+    {
+//        RobotCLI.Save();
+    }
+
+    void cancel()
+    {
+//        RobotCLI.CancelPresets();
+    }
+
+    private void ApplyChanges()
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+
+
+}

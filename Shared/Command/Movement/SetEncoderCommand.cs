@@ -8,5 +8,7 @@ namespace Shared.Command.Movement
     {
         public UInt32 Count1 { get; set; }
         public UInt32 Count2 { get; set; }
+
+        public override string TopicName => "SetEncoderCommand";
     }
 }

@@ -14,6 +14,7 @@ using ConsoleTestMapper;
 using SkiaSharp;
 using CartographerService;
 using MappingService.SLAM;
+using Shared.Data;
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");

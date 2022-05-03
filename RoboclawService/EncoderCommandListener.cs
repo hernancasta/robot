@@ -13,7 +13,7 @@ namespace RoboclawService
         private readonly Roboclaw.Roboclaw _client;
         public EncoderCommandListener(IMessageSubscriber messageSubscriber,
                                     Roboclaw.Roboclaw client
-                                    ) : base(messageSubscriber)
+                                    ) : base(messageSubscriber, "SetEncoderCommand")
         {
             _client = client;
         }

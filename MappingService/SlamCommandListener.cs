@@ -14,7 +14,7 @@ namespace MappingService
 
         public SlamCommandListener(IMessageSubscriber messageSubscriber,
                             SLAM.SlamProcessor slam
-                            ) : base(messageSubscriber)
+                            ) : base(messageSubscriber, "SLAMCommand")
         {
             _slam = slam;
         }

@@ -15,7 +15,7 @@ namespace RoboclawService
         private readonly Roboclaw.Roboclaw _client;
         public MotorCommandListener(IMessageSubscriber messageSubscriber,
                                     Roboclaw.Roboclaw client
-                                    ) : base(messageSubscriber)
+                                    ) : base(messageSubscriber, "MotorCommand")
         {
             _client = client;
         }

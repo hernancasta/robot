@@ -16,12 +16,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\MotorCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\SetEncoderCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Navigation\SLAMCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\Preset\PresetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AlarmMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\GamePadMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\LidarMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\MapMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\ObjectDetectionMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\PoseMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\PresetMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\TagMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messaging\DefaultMessagePublisher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messaging\DefaultMessageSubscriber.cs" />

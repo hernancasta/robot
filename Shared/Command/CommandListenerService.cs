@@ -13,14 +13,16 @@ namespace Shared.Command
         protected readonly IMessageSubscriber _messageSubscriber;
         private readonly string TOPIC;
 
-        public CommandListenerService(IMessageSubscriber messageSubscriber)
+        public CommandListenerService(IMessageSubscriber messageSubscriber, string topic)
         {
             _messageSubscriber = messageSubscriber;
-            TOPIC = typeof(T).Name;
+            TOPIC = topic;
+//            TOPIC = typeof(T).Name;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            Console.WriteLine($"Subscribing to topic {TOPIC}");
             _messageSubscriber.SubscribeAsync<T>(TOPIC, message => {
                 ExecuteCommand(message);
             });

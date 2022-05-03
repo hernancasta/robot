@@ -1,6 +1,7 @@
 using ManualControlService;
 using Shared.Command;
 using Shared.Command.Movement;
+using Shared.Command.Preset;
 using Shared.Messaging;
 using Shared.Redis;
 using Shared.Redis.Messaging;
@@ -15,10 +16,12 @@ IHost host = Host.CreateDefaultBuilder(args)
                 .AddRedisStreaming()
                 .AddRedis(hostContext.Configuration)
                 .AddSerialization()
-                .AddHostedService<Worker>()
                 .AddMessaging()
                 .AddRedisMessaging()
+//                .AddHostedService<PresetCommandListener>()
                 .AddSingleton<ICommandHandler<MotorCommand>, CommandHandler<MotorCommand>>() //Service to send commands to motor drive.
+                .AddSingleton<ICommandHandler<PresetCommand>, CommandHandler<PresetCommand>>() //Service to send commands to motor drive.
+                .AddHostedService<Worker>()
                 ;
     })
     .Build();

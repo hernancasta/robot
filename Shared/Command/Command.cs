@@ -7,5 +7,6 @@ namespace Shared.Command
 {
     internal abstract class Command : IMessage
     {
+        abstract public string TopicName { get; }
     }
 }

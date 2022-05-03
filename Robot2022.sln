@@ -35,13 +35,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManualControlService", "Man
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingService", "MappingService\MappingService.csproj", "{E53492EF-8C9D-44EB-BB0F-ED5E8E036928}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartographerService", "CartographerService\CartographerService.csproj", "{44D0A801-122E-4362-BE89-115FABDC5864}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartographerService", "CartographerService\CartographerService.csproj", "{44D0A801-122E-4362-BE89-115FABDC5864}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C9DF9FC8-D4A6-4B62-8E3A-95BAC8431275}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestMapper", "ConsoleTestMapper\ConsoleTestMapper.csproj", "{B224D2F6-3663-4971-AEF5-08A55A5F3F02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTestMapper", "ConsoleTestMapper\ConsoleTestMapper.csproj", "{B224D2F6-3663-4971-AEF5-08A55A5F3F02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B21DB398-B300-4588-A207-AC7F3E297E3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B21DB398-B300-4588-A207-AC7F3E297E3F}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
