@@ -16,6 +16,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\MotorCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Movement\SetEncoderCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Navigation\SLAMCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\PresetCommandListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Command\Preset\Preset.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Command\Preset\PresetCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AlarmMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Extensions.cs" />

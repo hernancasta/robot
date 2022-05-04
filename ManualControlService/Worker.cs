@@ -40,8 +40,6 @@ namespace ManualControlService
         bool lastButtonAPressed = false;
 
         bool _blockLidar = false;
-//        int _speed = 0;
-        //uint _accel = 0, _deceleration=0;
         short _zeroThreshold;
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -49,14 +47,7 @@ namespace ManualControlService
             _blockLidar = _configuration.GetValue<bool>("ManualControlService:BlockByLidar");
             _zeroThreshold = _configuration.GetValue<short>("ManualControlService:ZeroThreshold");
 
-            var Acceleration = _configuration.GetValue<uint>("ManualControlService:Acceleration");
-            var Deceleration = _configuration.GetValue<uint>("ManualControlService:Deceleration");
-            var Speed = _configuration.GetValue<uint>("ManualControlService:Speed");
-
-            await _preset.HandleAsync(new PresetCommand { Name = "Acceleration", Topic = "ManualControlService", SetValue = (uint)Acceleration });
-            await _preset.HandleAsync(new PresetCommand { Name = "Deceleration", Topic = "ManualControlService", SetValue = (uint)Deceleration });
-            await _preset.HandleAsync(new PresetCommand { Name = "Speed", Topic = "ManualControlService", SetValue = (uint)Speed });
-
+           
             await _streamSubscriber.SubscribeAsync<GamePadMessage>("gamepad", async (data) =>
             {
                 Enabled = data.IsPressed(Button.LB) & data.IsPressed(Button.RB);
@@ -107,9 +98,9 @@ namespace ManualControlService
                     await _motor.HandleAsync(new MotorCommand()
                     {
                         MovementType = MovementType.Speed,
-                        Acceleration = _presetListener.Acceleration,
-                        Motor1Speed = (int)(_presetListener.Speed * motor1),
-                        Motor2Speed = (int)(_presetListener.Speed * motor2)
+                        Acceleration = _presetListener.GetPreset<UInt32>("Acceleration").CurrentValue,
+                        Motor1Speed = (int)(_presetListener.GetPreset<UInt32>("Speed").CurrentValue * motor1),
+                        Motor2Speed = (int)(_presetListener.GetPreset<UInt32>("Speed").CurrentValue * motor2)
                     });
                     lastMovedFlag = true;
                 } else
@@ -117,7 +108,7 @@ namespace ManualControlService
                     await _motor.HandleAsync(new MotorCommand()
                     {
                         MovementType = MovementType.Speed,
-                        Acceleration = _presetListener.Deceleration,
+                        Acceleration = _presetListener.GetPreset<UInt32>("Deceleration").CurrentValue,
                         Motor1Speed = 0,
                         Motor2Speed = 0
                     });
