@@ -1,7 +1,7 @@
 
 This system is a prove of concept for an autonomous robot composed by a set of microservices over a dotnet core framwework.
 
-The communication between different microservices relies on Redis (http://redis.io). Which is installed on a respberry pi board. 
+The communication between different microservices relies on Redis (http://redis.io), which is installed on a respberry pi board. 
 The installation is very straightforward (https://amalgjose.com/2020/08/11/how-to-install-redis-in-raspberry-pi/), I just changed the version for the last available in Redis.
 
 Regarding the hardware:
@@ -47,7 +47,7 @@ The idea is to generate and test a mapping from this log in offline mode.
 EncoderESP32Service:
 -------------------
 DEPRECATED. Alternative to read the encoders from an ESP32 connected directly to the encoders. 
-Now I am using BASICMICRO drive board since manage the sinchronization between the drives and the encoders directly.
+Now I am using BASICMICRO drive board since it manages the synchronization between the drives and the encoders directly.
 
 GamePadService:
 --------------
@@ -63,7 +63,7 @@ Service which exposes the Lidar scans
 
 ManualControlService:
 --------------------
-Service to control manually (using the XBox controller) the movement of the robot interfacing the XBox services with the RoboclawService.
+Service to control manually, using the XBox controller, the movement of the robot interfacing the XBox services with the RoboclawService.
 
 MappingService:
 --------------
