@@ -2,7 +2,7 @@
 This system is a prove of concept for an autonomous robot composed by a set of microservices over a dotnet core framwework.
 
 The communication between different microservices relies on Redis (http://redis.io). Which is installed on a respberry pi board. 
-The installation is very straightforward (https://amalgjose.com/2020/08/11/how-to-install-redis-in-raspberry-pi/), I just change the version for the last available in Redis.
+The installation is very straightforward (https://amalgjose.com/2020/08/11/how-to-install-redis-in-raspberry-pi/), I just changed the version for the last available in Redis.
 
 Regarding the hardware:
 - RoboClaw ST2x45A https://www.basicmicro.com/RoboClaw-ST-2x45A-Motor-Controller_p_27.html
